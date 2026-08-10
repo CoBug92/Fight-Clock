@@ -1,0 +1,7 @@
+git_url("ssh://git@ssh.github.com:443/SE-Kostyuchenko/Apple-Certificates.git")
+storage_mode("git")
+git_branch("personal")
+type("appstore")
+team_id("Q9WXSNT6UT")
+app_identifier("com.kostyuchenko.stack-attack")
+readonly(ENV["MATCH_READONLY"] != "false")

@@ -1,0 +1,5 @@
+.DerivedData/
+.DS_Store
+/.bundle/
+/Scripts/project.env
+/Scripts/fastlane/.env
