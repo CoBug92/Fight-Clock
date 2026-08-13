@@ -66,6 +66,7 @@ Required secret configuration for deploy:
 - `APP_STORE_CONNECT_API_KEY_CONTENT`
 - `MATCH_PASSWORD`
 - `MATCH_GIT_URL`
+- `CI_KEYCHAIN_PASSWORD`
 
 Optional:
 

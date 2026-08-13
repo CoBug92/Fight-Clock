@@ -89,20 +89,34 @@ platform :ios do
     extension_identifier = "#{app_identifier}.liveactivity"
     team_id = required_env("TEAM_ID")
     scheme_name = required_env("TARGET_NAME")
+    keychain_password = required_env("CI_KEYCHAIN_PASSWORD")
+    keychain_name = "fight_clock_ci_#{ENV.fetch('GITHUB_RUN_ID', Process.pid)}_#{ENV.fetch('GITHUB_RUN_ATTEMPT', 1)}"
     api_key = app_store_connect_api_key(app_store_connect_api_key_options)
 
-    setup_ci(
-      force: true,
-      keychain_name: "fight_clock_ci",
-      timeout: 0
+    create_keychain(
+      name: keychain_name,
+      password: keychain_password,
+      default_keychain: true,
+      unlock: true,
+      timeout: 0,
+      lock_when_sleeps: false,
+      add_to_search_list: true
     )
     match(
       api_key: api_key,
       app_identifier: [
         app_identifier,
         extension_identifier
-      ]
+      ],
+      readonly: true,
+      keychain_name: keychain_name,
+      keychain_password: keychain_password
     )
+    identities = sh(
+      "security find-identity -v -p codesigning #{keychain_name.shellescape}",
+      log: false
+    )
+    UI.user_error!("No valid code-signing identity was imported into #{keychain_name}") if identities.include?("0 valid identities found")
 
     marketing_version = current_marketing_version
     latest_build_number = latest_testflight_build_number(
