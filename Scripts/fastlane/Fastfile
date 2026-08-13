@@ -15,7 +15,7 @@ def project_path
 end
 
 def project_spec_path
-  File.join(project_root, "Scripts", "xcodegen", "project.yml")
+  File.join(project_root, "Scripts", "xcodegen", "Application.yml")
 end
 
 def required_env(key)
