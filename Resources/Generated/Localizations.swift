@@ -13,8 +13,8 @@ internal enum Localizations {
   internal enum Accessibility {
     /// Оставшееся время
     internal static let remainingTime = Localizations.tr("Localizable", "accessibility.remaining_time", fallback: "Оставшееся время")
-    /// Сразу запускает первый раунд
-    internal static let startHint = Localizations.tr("Localizable", "accessibility.start_hint", fallback: "Сразу запускает первый раунд")
+    /// Запускает обратный отсчёт до первого раунда
+    internal static let startHint = Localizations.tr("Localizable", "accessibility.start_hint", fallback: "Запускает обратный отсчёт до первого раунда")
   }
   internal enum Action {
     /// Отмена
@@ -29,10 +29,10 @@ internal enum Localizations {
     internal static let stop = Localizations.tr("Localizable", "action.stop", fallback: "Завершить")
   }
   internal enum Active {
-    /// ПОДГОТОВКА
-    internal static let preparation = Localizations.tr("Localizable", "active.preparation", fallback: "ПОДГОТОВКА")
     /// ПАУЗА
     internal static let paused = Localizations.tr("Localizable", "active.paused", fallback: "ПАУЗА")
+    /// ПОДГОТОВКА
+    internal static let preparation = Localizations.tr("Localizable", "active.preparation", fallback: "ПОДГОТОВКА")
     /// ОТДЫХ
     internal static let rest = Localizations.tr("Localizable", "active.rest", fallback: "ОТДЫХ")
     /// РАУНД
@@ -43,12 +43,12 @@ internal enum Localizations {
     }
   }
   internal enum Activity {
-    /// ПОДГОТОВКА
-    internal static let preparation = Localizations.tr("Localizable", "activity.preparation", fallback: "ПОДГОТОВКА")
     /// Открыть
     internal static let openApp = Localizations.tr("Localizable", "activity.open_app", fallback: "Открыть")
     /// ПАУЗА
     internal static let paused = Localizations.tr("Localizable", "activity.paused", fallback: "ПАУЗА")
+    /// ПОДГОТОВКА
+    internal static let preparation = Localizations.tr("Localizable", "activity.preparation", fallback: "ПОДГОТОВКА")
     /// ОТДЫХ
     internal static let rest = Localizations.tr("Localizable", "activity.rest", fallback: "ОТДЫХ")
     /// РАУНД

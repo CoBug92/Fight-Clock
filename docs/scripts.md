@@ -17,7 +17,7 @@ Scripts/
 
 ## Local Environment
 
-Create `Scripts/project.env` from the example before using generation or Fastlane:
+The repository currently contains `Scripts/project.env`. Check its local values before using generation or Fastlane. If it is missing, recreate it from the example:
 
 ```sh
 cp Scripts/project.env.example Scripts/project.env
@@ -57,7 +57,7 @@ Files:
 - `Appfile` — resolves the app identifier from environment.
 - `Matchfile` — configures Match through environment variables instead of hardcoded secrets.
 
-Version bumping in Fastlane edits `Scripts/xcodegen/project.yml`, not files in the repository root.
+Version settings currently live in `Scripts/xcodegen/Application.yml`. The `deploy_to_tf` lane still looks for them in `Scripts/xcodegen/project.yml`; therefore automatic version bumping and TestFlight delivery require the Fastlane path to be corrected before use.
 
 Required secret configuration for deploy:
 
@@ -76,7 +76,7 @@ Optional:
 
 `APP_STORE_CONNECT_API_KEY_CONTENT` must contain base64-encoded key content because Fastlane uses `is_key_content_base64: true`.
 
-Run the lane from `Scripts/fastlane`:
+After correcting that known version-file mismatch and installing Fastlane dependencies, run the lane from `Scripts/fastlane`:
 
 ```sh
 bundle exec fastlane ios deploy_to_tf
