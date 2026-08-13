@@ -4,4 +4,7 @@ git_branch("personal")
 type("appstore")
 team_id("Q9WXSNT6UT")
 readonly(ENV["MATCH_READONLY"] != "false")
-app_identifier("ru.kostyuchenko.fightclock")
+app_identifier([
+  "ru.kostyuchenko.fightclock",
+  "ru.kostyuchenko.fightclock.liveactivity"
+])
