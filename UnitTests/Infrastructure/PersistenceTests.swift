@@ -42,6 +42,7 @@ final class PersistenceTests: XCTestCase {
         let configuration = try JSONDecoder().decode(TimerConfiguration.self, from: data)
 
         XCTAssertEqual(configuration.roundWarning, .disabled)
+        XCTAssertEqual(configuration.preparationDuration, 0)
     }
 
     func testSessionRoundTripAndClear() throws {

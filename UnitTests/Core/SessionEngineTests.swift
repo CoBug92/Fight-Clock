@@ -5,13 +5,29 @@ final class SessionEngineTests: XCTestCase {
     private let engine = SessionEngine()
     private let start = Date(timeIntervalSince1970: 1_000)
 
-    func testStartCreatesFirstRoundWithAbsoluteBoundary() throws {
+    func testStartCreatesPreparationWithAbsoluteBoundary() throws {
         let state = try XCTUnwrap(engine.start(configuration: .defaultValue, at: start))
 
-        XCTAssertEqual(state.phase, .round)
+        XCTAssertEqual(state.phase, .preparation)
         XCTAssertEqual(state.currentRound, 1)
-        XCTAssertEqual(state.phaseEndDate, start.addingTimeInterval(180))
+        XCTAssertEqual(state.phaseEndDate, start.addingTimeInterval(10))
         XCTAssertFalse(state.isPaused)
+    }
+
+    func testPreparationTransitionsToFirstRoundWithoutDrift() throws {
+        let configuration = TimerConfiguration(
+            roundCount: 1,
+            roundDuration: 60,
+            restDuration: 0,
+            preparationDuration: 15
+        )
+        let state = try XCTUnwrap(engine.start(configuration: configuration, at: start))
+        let resolution = engine.resolve(state, at: start.addingTimeInterval(15))
+
+        XCTAssertEqual(resolution.state?.phase, .round)
+        XCTAssertEqual(resolution.state?.currentRound, 1)
+        XCTAssertEqual(resolution.state?.phaseEndDate, start.addingTimeInterval(75))
+        XCTAssertEqual(resolution.signals, [.roundStarted])
     }
 
     func testResolveTransitionsRoundToRest() throws {

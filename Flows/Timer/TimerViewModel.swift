@@ -47,6 +47,7 @@ final class TimerViewModel: ObservableObject {
     var roundCount: Int { configuration.roundCount }
     var roundDuration: Int { configuration.roundDuration }
     var restDuration: Int { configuration.restDuration }
+    var preparationDuration: Int { configuration.preparationDuration }
     var roundWarning: RoundWarning { configuration.roundWarning }
 
     func launch() async {
@@ -59,6 +60,7 @@ final class TimerViewModel: ObservableObject {
         roundCount: Int? = nil,
         roundDuration: Int? = nil,
         restDuration: Int? = nil,
+        preparationDuration: Int? = nil,
         roundWarning: RoundWarning? = nil
     ) {
         guard session == nil else { return }
@@ -66,6 +68,7 @@ final class TimerViewModel: ObservableObject {
             roundCount: roundCount ?? configuration.roundCount,
             roundDuration: roundDuration ?? configuration.roundDuration,
             restDuration: restDuration ?? configuration.restDuration,
+            preparationDuration: preparationDuration ?? configuration.preparationDuration,
             roundWarning: roundWarning ?? configuration.roundWarning
         )
         guard candidate.isValid else { return }
@@ -82,7 +85,7 @@ final class TimerViewModel: ObservableObject {
         guard session == nil, let state = engine.start(configuration: configuration, at: now) else { return }
         let generation = beginOperation()
         apply(state, at: now)
-        if isSceneActive { signalPlayer.play(.roundStarted) }
+        if isSceneActive, state.phase == .round { signalPlayer.play(.roundStarted) }
         idleTimerController.setDisabled(true)
 
         await notificationScheduler.schedule(for: state, now: now)
@@ -178,14 +181,11 @@ final class TimerViewModel: ObservableObject {
 
         apply(resolved, at: now)
         idleTimerController.setDisabled(isSceneActive)
-        let isRecent = previousBoundary.map { now.timeIntervalSince($0) < 1.5 } == true
-        if playSignal, isSceneActive, resolution.signals.count == 1,
-           let signal = resolution.signals.first {
-            if case .roundEnding = signal {
-                signalPlayer.play(signal)
-            } else if isRecent {
-                signalPlayer.play(signal)
-            }
+        let isRecentBoundary = previousBoundary.map { now.timeIntervalSince($0) < 1.5 } == true
+        if playSignal,
+           isSceneActive,
+           let signal = signalToPlay(from: resolution.signals, isRecentBoundary: isRecentBoundary) {
+            signalPlayer.play(signal)
         }
 
         guard !resolution.signals.isEmpty else { return }
@@ -248,6 +248,25 @@ final class TimerViewModel: ObservableObject {
                 await self.synchronize(playSignal: true)
                 if self.session == nil { return }
             }
+        }
+    }
+
+    private func signalToPlay(from signals: [SessionSignal], isRecentBoundary: Bool) -> SessionSignal? {
+        guard !signals.isEmpty else { return nil }
+
+        if signals.count == 1, let signal = signals.first {
+            if case .roundEnding = signal {
+                return signal
+            }
+            return isRecentBoundary ? signal : nil
+        }
+
+        guard isRecentBoundary else { return nil }
+        return signals.last {
+            if case .roundEnding = $0 {
+                return false
+            }
+            return true
         }
     }
 }

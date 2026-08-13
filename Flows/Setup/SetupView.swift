@@ -10,6 +10,11 @@ struct SetupView: View {
                     header
                     roundsPicker
                     DurationPicker(
+                        title: Localizations.Setup.preparationDuration,
+                        duration: preparationDurationBinding,
+                        range: 0...300
+                    )
+                    DurationPicker(
                         title: Localizations.Setup.roundDuration,
                         duration: roundDurationBinding,
                         range: 10...900
@@ -45,20 +50,27 @@ struct SetupView: View {
     }
 
     private var roundsPicker: some View {
-        HStack {
-            Text(Localizations.Setup.rounds)
-                .font(.title3.bold())
-            Spacer()
+        Menu {
             Picker(Localizations.Setup.rounds, selection: roundCountBinding) {
                 ForEach(1...15, id: \.self) { count in
                     Text(count.formatted()).tag(count)
                 }
             }
-            .pickerStyle(.menu)
-            .tint(.white)
+        } label: {
+            HStack {
+                Text(Localizations.Setup.rounds)
+                    .font(.title3.bold())
+                Spacer()
+                Text(viewModel.roundCount.formatted())
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption.bold())
+            }
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
+        .tint(.primary)
         .padding(Margin.standard)
-        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 18))
+        .background(Color(.cardBackground), in: RoundedRectangle(cornerRadius: 18))
     }
 
     private var warningPicker: some View {
@@ -73,7 +85,7 @@ struct SetupView: View {
             .pickerStyle(.segmented)
         }
         .padding(Margin.standard)
-        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 18))
+        .background(Color(.cardBackground), in: RoundedRectangle(cornerRadius: 18))
     }
 
     @ViewBuilder
@@ -113,9 +125,9 @@ struct SetupView: View {
 
     private var background: some View {
         ZStack {
-            Color(red: 0.04, green: 0.055, blue: 0.07)
+            Color(.launchBackground)
             RadialGradient(
-                colors: [.orange.opacity(0.22), .clear],
+                colors: [Color(.setupGlow), .clear],
                 center: .topTrailing,
                 startRadius: 30,
                 endRadius: 440
@@ -132,6 +144,13 @@ struct SetupView: View {
         Binding(get: { viewModel.roundDuration }, set: { viewModel.update(roundDuration: $0) })
     }
 
+    private var preparationDurationBinding: Binding<Int> {
+        Binding(
+            get: { viewModel.preparationDuration },
+            set: { viewModel.update(preparationDuration: $0) }
+        )
+    }
+
     private var restDurationBinding: Binding<Int> {
         Binding(get: { viewModel.restDuration }, set: { viewModel.update(restDuration: $0) })
     }
@@ -145,5 +164,4 @@ struct SetupView: View {
 
 #Preview {
     SetupView(viewModel: AppDependencies().makeTimerViewModel())
-        .preferredColorScheme(.dark)
 }

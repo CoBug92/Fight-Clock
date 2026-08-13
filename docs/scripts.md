@@ -42,9 +42,10 @@ Scripts/generate.sh
 
 It validates `Scripts/project.env`, exports it to the shell and then runs the existing XcodeGen/SwiftGen wrapper.
 
-Canonical XcodeGen spec location:
+Canonical XcodeGen spec locations:
 
-- `Scripts/xcodegen/project.yml`
+- `Scripts/xcodegen/project.yml` as the thin entrypoint
+- `Scripts/xcodegen/Application.yml` as the main application spec
 
 ## Fastlane
 

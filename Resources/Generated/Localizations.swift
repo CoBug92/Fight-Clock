@@ -29,6 +29,8 @@ internal enum Localizations {
     internal static let stop = Localizations.tr("Localizable", "action.stop", fallback: "Завершить")
   }
   internal enum Active {
+    /// ПОДГОТОВКА
+    internal static let preparation = Localizations.tr("Localizable", "active.preparation", fallback: "ПОДГОТОВКА")
     /// ПАУЗА
     internal static let paused = Localizations.tr("Localizable", "active.paused", fallback: "ПАУЗА")
     /// ОТДЫХ
@@ -41,6 +43,8 @@ internal enum Localizations {
     }
   }
   internal enum Activity {
+    /// ПОДГОТОВКА
+    internal static let preparation = Localizations.tr("Localizable", "activity.preparation", fallback: "ПОДГОТОВКА")
     /// Открыть
     internal static let openApp = Localizations.tr("Localizable", "activity.open_app", fallback: "Открыть")
     /// ПАУЗА
@@ -89,6 +93,8 @@ internal enum Localizations {
     internal static let title = Localizations.tr("Localizable", "permission.title", fallback: "Фоновые сигналы")
   }
   internal enum Setup {
+    /// Время на подготовку
+    internal static let preparationDuration = Localizations.tr("Localizable", "setup.preparation_duration", fallback: "Время на подготовку")
     /// Длительность отдыха
     internal static let restDuration = Localizations.tr("Localizable", "setup.rest_duration", fallback: "Длительность отдыха")
     /// Длительность раунда

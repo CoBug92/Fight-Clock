@@ -17,10 +17,11 @@ final class ForegroundSignalPlayer: NSObject, SignalPlaying {
 
         do {
             let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.ambient, options: [.duckOthers])
+            try session.setCategory(.playback, mode: .default, options: [.duckOthers])
             try session.setActive(true)
             player = try AVAudioPlayer(contentsOf: url)
             player?.delegate = self
+            player?.prepareToPlay()
             player?.play()
         } catch {
             try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)

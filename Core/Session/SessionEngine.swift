@@ -8,9 +8,13 @@ struct SessionEngine: Sendable {
             id: UUID(),
             notificationRevision: UUID(),
             configuration: configuration,
-            phase: .round,
+            phase: configuration.preparationDuration > 0 ? .preparation : .round,
             currentRound: 1,
-            phaseEndDate: date.addingTimeInterval(TimeInterval(configuration.roundDuration)),
+            phaseEndDate: date.addingTimeInterval(
+                TimeInterval(configuration.preparationDuration > 0
+                    ? configuration.preparationDuration
+                    : configuration.roundDuration)
+            ),
             isPaused: false,
             pausedRemaining: nil,
             hasPlayedRoundWarning: false,
@@ -33,6 +37,10 @@ struct SessionEngine: Sendable {
         while date >= boundary {
             appendRoundWarningIfNeeded(state: &current, boundary: boundary, signals: &signals)
             switch current.phase {
+            case .preparation:
+                current.phase = .round
+                boundary = boundary.addingTimeInterval(TimeInterval(current.configuration.roundDuration))
+                signals.append(.roundStarted)
             case .round where current.currentRound == current.configuration.roundCount:
                 signals.append(.workoutCompleted)
                 return SessionResolution(state: nil, signals: signals)

@@ -3,6 +3,7 @@
 "setup.rounds" = "Rounds";
 "setup.round_duration" = "Round duration";
 "setup.rest_duration" = "Rest duration";
+"setup.preparation_duration" = "Preparation time";
 "setup.warning.title" = "End-of-round warning";
 "setup.warning.disabled" = "Off";
 "setup.warning.ten_seconds" = "10 sec";
@@ -15,6 +16,7 @@
 "action.stop" = "Stop";
 "action.cancel" = "Cancel";
 "active.round" = "ROUND";
+"active.preparation" = "GET READY";
 "active.rest" = "REST";
 "active.paused" = "PAUSED";
 "active.round_progress" = "Round %d of %d";
@@ -24,7 +26,7 @@
 "stop.title" = "End workout?";
 "stop.message" = "This session will not be saved to history.";
 "stop.confirm" = "End Workout";
-"accessibility.start_hint" = "Starts the first round immediately";
+"accessibility.start_hint" = "Starts the countdown to the first round";
 "accessibility.remaining_time" = "Remaining time";
 "notification.title" = "Fight Clock";
 "notification.round" = "Next round";
@@ -32,6 +34,7 @@
 "notification.complete" = "Workout complete";
 "notification.warning" = "Round ends in %d seconds";
 "activity.round" = "ROUND";
+"activity.preparation" = "GET READY";
 "activity.rest" = "REST";
 "activity.paused" = "PAUSED";
 "activity.stale" = "UPDATE NEEDED";

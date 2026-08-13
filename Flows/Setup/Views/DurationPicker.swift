@@ -27,7 +27,7 @@ struct DurationPicker: View {
             .accessibilityValue(formattedDuration)
         }
         .padding(Margin.standard)
-        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 18))
+        .background(Color(.cardBackground), in: RoundedRectangle(cornerRadius: 18))
     }
 
     private func wheel(selection: Binding<Int>, values: [Int], label: String) -> some View {
@@ -71,6 +71,4 @@ struct DurationPicker: View {
     @Previewable @State var duration = 150
     DurationPicker(title: "Round", duration: $duration, range: 10...900)
         .padding()
-        .background(Color.black)
-        .preferredColorScheme(.dark)
 }

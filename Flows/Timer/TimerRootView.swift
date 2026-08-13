@@ -14,7 +14,6 @@ struct TimerRootView: View {
             }
         }
         .animation(.easeOut(duration: 0.25), value: viewModel.session == nil)
-        .preferredColorScheme(.dark)
     }
 }
 

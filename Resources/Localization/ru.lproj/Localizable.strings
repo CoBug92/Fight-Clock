@@ -3,6 +3,7 @@
 "setup.rounds" = "Раунды";
 "setup.round_duration" = "Длительность раунда";
 "setup.rest_duration" = "Длительность отдыха";
+"setup.preparation_duration" = "Время на подготовку";
 "setup.warning.title" = "Сигнал до конца раунда";
 "setup.warning.disabled" = "Выкл.";
 "setup.warning.ten_seconds" = "10 сек";
@@ -15,6 +16,7 @@
 "action.stop" = "Завершить";
 "action.cancel" = "Отмена";
 "active.round" = "РАУНД";
+"active.preparation" = "ПОДГОТОВКА";
 "active.rest" = "ОТДЫХ";
 "active.paused" = "ПАУЗА";
 "active.round_progress" = "Раунд %d из %d";
@@ -24,7 +26,7 @@
 "stop.title" = "Завершить тренировку?";
 "stop.message" = "Текущая сессия не будет сохранена в историю.";
 "stop.confirm" = "Завершить тренировку";
-"accessibility.start_hint" = "Сразу запускает первый раунд";
+"accessibility.start_hint" = "Запускает обратный отсчёт до первого раунда";
 "accessibility.remaining_time" = "Оставшееся время";
 "notification.title" = "Fight Clock";
 "notification.round" = "Следующий раунд";
@@ -32,6 +34,7 @@
 "notification.complete" = "Тренировка завершена";
 "notification.warning" = "До конца раунда %d секунд";
 "activity.round" = "РАУНД";
+"activity.preparation" = "ПОДГОТОВКА";
 "activity.rest" = "ОТДЫХ";
 "activity.paused" = "ПАУЗА";
 "activity.stale" = "НУЖНО ОБНОВИТЬ";

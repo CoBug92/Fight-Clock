@@ -5,18 +5,27 @@ struct TimerConfiguration: Codable, Equatable, Sendable {
         roundCount: 3,
         roundDuration: 180,
         restDuration: 60,
+        preparationDuration: 10,
         roundWarning: .disabled
     )
 
     let roundCount: Int
     let roundDuration: Int
     let restDuration: Int
+    let preparationDuration: Int
     let roundWarning: RoundWarning
 
-    init(roundCount: Int, roundDuration: Int, restDuration: Int, roundWarning: RoundWarning = .disabled) {
+    init(
+        roundCount: Int,
+        roundDuration: Int,
+        restDuration: Int,
+        preparationDuration: Int = 0,
+        roundWarning: RoundWarning = .disabled
+    ) {
         self.roundCount = roundCount
         self.roundDuration = roundDuration
         self.restDuration = restDuration
+        self.preparationDuration = preparationDuration
         self.roundWarning = roundWarning
     }
 
@@ -24,8 +33,10 @@ struct TimerConfiguration: Codable, Equatable, Sendable {
         (1...15).contains(roundCount)
             && (10...900).contains(roundDuration)
             && (0...300).contains(restDuration)
+            && (0...300).contains(preparationDuration)
             && roundDuration.isMultiple(of: 5)
             && restDuration.isMultiple(of: 5)
+            && preparationDuration.isMultiple(of: 5)
     }
 
     init(from decoder: Decoder) throws {
@@ -33,6 +44,7 @@ struct TimerConfiguration: Codable, Equatable, Sendable {
         roundCount = try container.decode(Int.self, forKey: .roundCount)
         roundDuration = try container.decode(Int.self, forKey: .roundDuration)
         restDuration = try container.decode(Int.self, forKey: .restDuration)
+        preparationDuration = try container.decodeIfPresent(Int.self, forKey: .preparationDuration) ?? 0
         roundWarning = try container.decodeIfPresent(RoundWarning.self, forKey: .roundWarning) ?? .disabled
     }
 }

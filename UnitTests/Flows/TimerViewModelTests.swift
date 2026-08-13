@@ -10,6 +10,7 @@ final class TimerViewModelTests: XCTestCase {
             roundCount: 4,
             roundDuration: 150,
             restDuration: 75,
+            preparationDuration: 25,
             roundWarning: .thirtySeconds
         )
 
@@ -19,6 +20,7 @@ final class TimerViewModelTests: XCTestCase {
                 roundCount: 4,
                 roundDuration: 150,
                 restDuration: 75,
+                preparationDuration: 25,
                 roundWarning: .thirtySeconds
             )
         )
@@ -52,7 +54,7 @@ final class TimerViewModelTests: XCTestCase {
         await fixture.viewModel.start()
 
         XCTAssertNotNil(fixture.sessionRepository.value)
-        XCTAssertEqual(fixture.signalPlayer.signals, [.roundStarted])
+        XCTAssertTrue(fixture.signalPlayer.signals.isEmpty)
         XCTAssertEqual(fixture.notificationScheduler.scheduledStates.count, 1)
         let startedStates = await fixture.liveActivityController.startedStates
         XCTAssertEqual(startedStates.count, 1)
@@ -75,7 +77,7 @@ final class TimerViewModelTests: XCTestCase {
         await fixture.viewModel.stop()
 
         XCTAssertNil(fixture.sessionRepository.value)
-        XCTAssertEqual(fixture.signalPlayer.signals, [.roundStarted])
+        XCTAssertTrue(fixture.signalPlayer.signals.isEmpty)
         let endedSessionIDs = await fixture.liveActivityController.endedSessionIDs
         XCTAssertEqual(endedSessionIDs.count, 1)
         XCTAssertFalse(fixture.idleTimerController.isDisabled)
@@ -160,6 +162,7 @@ final class TimerViewModelTests: XCTestCase {
         XCTAssertTrue(fixture.signalPlayer.signals.isEmpty)
         await fixture.viewModel.stop()
     }
+
 }
 
 @MainActor

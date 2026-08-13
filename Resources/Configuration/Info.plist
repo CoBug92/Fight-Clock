@@ -18,6 +18,8 @@
     <string>$(CURRENT_PROJECT_VERSION)</string>
     <key>CFBundleDisplayName</key>
     <string>Fight Clock</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleLocalizations</key>
@@ -27,6 +29,8 @@
     </array>
     <key>NSHumanReadableCopyright</key>
     <string></string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
     <key>NSSupportsLiveActivities</key>
     <true/>
     <key>UILaunchScreen</key>

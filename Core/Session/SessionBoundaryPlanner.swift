@@ -10,6 +10,14 @@ struct SessionBoundaryPlanner: Sendable {
         var result: [SessionBoundary] = []
 
         while true {
+            if phase == .preparation {
+                result.append(SessionBoundary(date: boundary, signal: .roundStarted, round: 1))
+                phase = .round
+                isCurrentPhase = false
+                boundary = boundary.addingTimeInterval(TimeInterval(state.configuration.roundDuration))
+                continue
+            }
+
             if phase == .round {
                 appendWarningIfNeeded(
                     to: &result,

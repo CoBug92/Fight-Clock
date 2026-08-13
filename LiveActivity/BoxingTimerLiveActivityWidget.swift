@@ -18,8 +18,8 @@ struct BoxingTimerLiveActivityWidget: Widget {
                 action(for: context.state, isStale: context.isStale)
             }
             .padding()
-            .activityBackgroundTint(.black.opacity(0.86))
-            .activitySystemActionForegroundColor(.white)
+            .activityBackgroundTint(Color(uiColor: .secondarySystemBackground))
+            .activitySystemActionForegroundColor(.primary)
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
@@ -85,7 +85,11 @@ struct BoxingTimerLiveActivityWidget: Widget {
     private func title(for state: BoxingTimerActivityAttributes.ContentState, isStale: Bool) -> String {
         if isStale { return Localizations.Activity.stale }
         if state.isPaused { return Localizations.Activity.paused }
-        return state.phase == .round ? Localizations.Activity.round : Localizations.Activity.rest
+        switch state.phase {
+        case .preparation: return Localizations.Activity.preparation
+        case .round: return Localizations.Activity.round
+        case .rest: return Localizations.Activity.rest
+        }
     }
 
     private func format(seconds: Int) -> String {

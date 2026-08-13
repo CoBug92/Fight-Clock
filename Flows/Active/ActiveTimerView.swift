@@ -94,8 +94,8 @@ struct ActiveTimerView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            .tint(.white)
-            .foregroundStyle(.black)
+            .tint(Color(.timerActionBackground))
+            .foregroundStyle(Color(.timerActionForeground))
             .controlSize(.large)
 
             Button(Localizations.Action.stop, role: .destructive) {
@@ -109,7 +109,11 @@ struct ActiveTimerView: View {
     private var phaseTitle: String {
         guard let session = viewModel.session else { return "" }
         if session.isPaused { return Localizations.Active.paused }
-        return session.phase == .round ? Localizations.Active.round : Localizations.Active.rest
+        switch session.phase {
+        case .preparation: return Localizations.Active.preparation
+        case .round: return Localizations.Active.round
+        case .rest: return Localizations.Active.rest
+        }
     }
 
     private var pauseActionTitle: String {
@@ -123,15 +127,21 @@ struct ActiveTimerView: View {
     }
 
     private var background: some View {
-        let isRest = viewModel.session?.phase == .rest
+        let phase = viewModel.session?.phase
         return LinearGradient(
-            colors: isRest
-                ? [Color(red: 0.02, green: 0.25, blue: 0.30), Color.black]
-                : [Color(red: 0.55, green: 0.10, blue: 0.04), Color.black],
+            colors: backgroundColors(for: phase),
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
         .ignoresSafeArea()
+    }
+
+    private func backgroundColors(for phase: SessionPhase?) -> [Color] {
+        switch phase {
+        case .rest: return [Color(.restPhaseBackground), Color(.timerBackgroundEnd)]
+        case .preparation: return [Color(.preparationPhaseBackground), Color(.timerBackgroundEnd)]
+        default: return [Color(.roundPhaseBackground), Color(.timerBackgroundEnd)]
+        }
     }
 }
 
@@ -139,5 +149,4 @@ struct ActiveTimerView: View {
 
 #Preview {
     ActiveTimerView(viewModel: AppDependencies().makeTimerViewModel())
-        .preferredColorScheme(.dark)
 }
