@@ -5,9 +5,14 @@ import UserNotifications
 final class NotificationScheduler: NotificationScheduling {
     private let center: UNUserNotificationCenter
     private let planner = SessionBoundaryPlanner()
+    private let soundResolver: SessionSoundResolver
 
-    init(center: UNUserNotificationCenter = .current()) {
+    init(
+        center: UNUserNotificationCenter = .current(),
+        soundResolver: SessionSoundResolver = SessionSoundResolver()
+    ) {
         self.center = center
+        self.soundResolver = soundResolver
     }
 
     func permission() async -> NotificationPermission {
@@ -29,7 +34,7 @@ final class NotificationScheduler: NotificationScheduling {
         guard await permission() == .allowed else { return }
 
         for (index, boundary) in planner.futureBoundaries(from: state, after: now).enumerated() {
-            let content = content(for: boundary)
+            let content = content(for: boundary, configuration: state.configuration)
             let interval = max(1, boundary.date.timeIntervalSince(now))
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
             let request = UNNotificationRequest(
@@ -52,23 +57,34 @@ final class NotificationScheduler: NotificationScheduling {
         center.removePendingNotificationRequests(withIdentifiers: identifiers)
     }
 
-    private func content(for boundary: SessionBoundary) -> UNMutableNotificationContent {
+    private func content(
+        for boundary: SessionBoundary,
+        configuration: TimerConfiguration
+    ) -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
         content.title = Localizations.Notification.title
 
         switch boundary.signal {
         case .roundStarted:
             content.body = Localizations.Notification.round
-            content.sound = UNNotificationSound(named: .init("placeholder_round.wav"))
+            content.sound = UNNotificationSound(
+                named: .init(soundResolver.notificationSoundName(for: boundary.signal, configuration: configuration))
+            )
         case let .roundEnding(seconds):
             content.body = Localizations.Notification.warning(seconds)
-            content.sound = UNNotificationSound(named: .init("placeholder_warning.wav"))
+            content.sound = UNNotificationSound(
+                named: .init(soundResolver.notificationSoundName(for: boundary.signal, configuration: configuration))
+            )
         case .restStarted:
             content.body = Localizations.Notification.rest
-            content.sound = UNNotificationSound(named: .init("placeholder_rest.wav"))
+            content.sound = UNNotificationSound(
+                named: .init(soundResolver.notificationSoundName(for: boundary.signal, configuration: configuration))
+            )
         case .workoutCompleted:
             content.body = Localizations.Notification.complete
-            content.sound = UNNotificationSound(named: .init("placeholder_complete.wav"))
+            content.sound = UNNotificationSound(
+                named: .init(soundResolver.notificationSoundName(for: boundary.signal, configuration: configuration))
+            )
         }
         return content
     }

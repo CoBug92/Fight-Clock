@@ -49,6 +49,10 @@ final class TimerViewModel: ObservableObject {
     var restDuration: Int { configuration.restDuration }
     var preparationDuration: Int { configuration.preparationDuration }
     var roundWarning: RoundWarning { configuration.roundWarning }
+    var soundConfiguration: TimerSoundConfiguration { configuration.soundConfiguration }
+    var roundStartSound: BundledTimerSound { configuration.soundConfiguration.roundStartSound }
+    var roundTransitionSound: BundledTimerSound { configuration.soundConfiguration.roundTransitionSound }
+    var warningSound: BundledTimerSound { configuration.soundConfiguration.warningSound }
 
     func launch() async {
         notificationPermission = await notificationScheduler.permission()
@@ -61,19 +65,33 @@ final class TimerViewModel: ObservableObject {
         roundDuration: Int? = nil,
         restDuration: Int? = nil,
         preparationDuration: Int? = nil,
-        roundWarning: RoundWarning? = nil
+        roundWarning: RoundWarning? = nil,
+        roundStartSound: BundledTimerSound? = nil,
+        roundTransitionSound: BundledTimerSound? = nil,
+        warningSound: BundledTimerSound? = nil,
+        soundConfiguration: TimerSoundConfiguration? = nil
     ) {
         guard session == nil else { return }
+        let candidateSoundConfiguration = soundConfiguration ?? TimerSoundConfiguration(
+            roundStartSound: roundStartSound ?? configuration.soundConfiguration.roundStartSound,
+            roundTransitionSound: roundTransitionSound ?? configuration.soundConfiguration.roundTransitionSound,
+            warningSound: warningSound ?? configuration.soundConfiguration.warningSound
+        )
         let candidate = TimerConfiguration(
             roundCount: roundCount ?? configuration.roundCount,
             roundDuration: roundDuration ?? configuration.roundDuration,
             restDuration: restDuration ?? configuration.restDuration,
             preparationDuration: preparationDuration ?? configuration.preparationDuration,
-            roundWarning: roundWarning ?? configuration.roundWarning
+            roundWarning: roundWarning ?? configuration.roundWarning,
+            soundConfiguration: candidateSoundConfiguration
         )
         guard candidate.isValid else { return }
         configuration = candidate
         configurationRepository.save(candidate)
+    }
+
+    func preview(_ sound: BundledTimerSound) {
+        signalPlayer.preview(sound)
     }
 
     func requestNotifications() async {
@@ -85,7 +103,9 @@ final class TimerViewModel: ObservableObject {
         guard session == nil, let state = engine.start(configuration: configuration, at: now) else { return }
         let generation = beginOperation()
         apply(state, at: now)
-        if isSceneActive, state.phase == .round { signalPlayer.play(.roundStarted) }
+        if isSceneActive, state.phase == .round {
+            signalPlayer.play(.roundStarted, configuration: state.configuration)
+        }
         idleTimerController.setDisabled(true)
 
         await notificationScheduler.schedule(for: state, now: now)
@@ -185,7 +205,7 @@ final class TimerViewModel: ObservableObject {
         if playSignal,
            isSceneActive,
            let signal = signalToPlay(from: resolution.signals, isRecentBoundary: isRecentBoundary) {
-            signalPlayer.play(signal)
+            signalPlayer.play(signal, configuration: resolved.configuration)
         }
 
         guard !resolution.signals.isEmpty else { return }
@@ -211,7 +231,9 @@ final class TimerViewModel: ObservableObject {
 
     private func complete(playSignal: Bool, state: SessionState) async {
         _ = beginOperation()
-        if playSignal, isSceneActive { signalPlayer.play(.workoutCompleted) }
+        if playSignal, isSceneActive {
+            signalPlayer.play(.workoutCompleted, configuration: state.configuration)
+        }
         timerTask?.cancel()
         timerTask = nil
         session = nil

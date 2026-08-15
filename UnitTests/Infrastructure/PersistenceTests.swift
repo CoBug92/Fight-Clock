@@ -18,7 +18,12 @@ final class PersistenceTests: XCTestCase {
             roundCount: 15,
             roundDuration: 150,
             restDuration: 75,
-            roundWarning: .tenSeconds
+            roundWarning: .tenSeconds,
+            soundConfiguration: TimerSoundConfiguration(
+                roundStartSound: .brightBell,
+                roundTransitionSound: .singleGong,
+                warningSound: .rhythmicPattern
+            )
         )
         repository.save(expected)
 
@@ -43,6 +48,7 @@ final class PersistenceTests: XCTestCase {
 
         XCTAssertEqual(configuration.roundWarning, .disabled)
         XCTAssertEqual(configuration.preparationDuration, 0)
+        XCTAssertEqual(configuration.soundConfiguration, .defaultValue)
     }
 
     func testSessionRoundTripAndClear() throws {
@@ -65,5 +71,44 @@ final class PersistenceTests: XCTestCase {
         let decoded = try JSONDecoder().decode(SessionState.self, from: legacyData)
 
         XCTAssertFalse(decoded.hasPlayedRoundWarning)
+    }
+
+    func testSetupPickerStateDefaultsAndRoundTrip() {
+        let repository = UserDefaultsSetupPickerStateRepository(defaults: defaults)
+        XCTAssertEqual(repository.load(), .defaultValue)
+
+        let expected = SetupPickerState(
+            isRoundsExpanded: false,
+            isPreparationExpanded: true,
+            isRoundDurationExpanded: false,
+            isRestExpanded: true,
+            isWarningExpanded: false
+        )
+        repository.save(expected)
+
+        XCTAssertEqual(repository.load(), expected)
+    }
+
+    func testLegacySetupPickerStateDefaultsMissingFieldsToExpanded() throws {
+        let data = try XCTUnwrap(
+            """
+            {"isRestExpanded":false}
+            """.data(using: .utf8)
+        )
+        defaults.set(data, forKey: SharedDefaults.setupPickerStateKey)
+
+        let repository = UserDefaultsSetupPickerStateRepository(defaults: defaults)
+        let state = repository.load()
+
+        XCTAssertEqual(
+            state,
+            SetupPickerState(
+                isRoundsExpanded: true,
+                isPreparationExpanded: true,
+                isRoundDurationExpanded: true,
+                isRestExpanded: false,
+                isWarningExpanded: true
+            )
+        )
     }
 }

@@ -2,6 +2,18 @@ import SwiftUI
 
 struct SetupView: View {
     @ObservedObject var viewModel: TimerViewModel
+    @State private var pickerState: SetupPickerState
+
+    private let pickerStateRepository: SetupPickerStateRepository
+
+    init(
+        viewModel: TimerViewModel,
+        pickerStateRepository: SetupPickerStateRepository = UserDefaultsSetupPickerStateRepository()
+    ) {
+        self.viewModel = viewModel
+        self.pickerStateRepository = pickerStateRepository
+        _pickerState = State(initialValue: pickerStateRepository.load())
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -12,19 +24,23 @@ struct SetupView: View {
                     DurationPicker(
                         title: Localizations.Setup.preparationDuration,
                         duration: preparationDurationBinding,
-                        range: 0...300
+                        range: 0...300,
+                        isExpanded: preparationExpandedBinding
                     )
                     DurationPicker(
                         title: Localizations.Setup.roundDuration,
                         duration: roundDurationBinding,
-                        range: 10...900
+                        range: 10...900,
+                        isExpanded: roundDurationExpandedBinding
                     )
                     DurationPicker(
                         title: Localizations.Setup.restDuration,
                         duration: restDurationBinding,
-                        range: 0...300
+                        range: 0...300,
+                        isExpanded: restExpandedBinding
                     )
                     warningPicker
+                    soundSettingsLink
                     notificationNotice
                     startButton
                 }
@@ -35,6 +51,10 @@ struct SetupView: View {
                 .frame(maxWidth: .infinity)
             }
             .background(background)
+        }
+        .toolbar(.hidden, for: .navigationBar)
+        .onChange(of: pickerState) { _, newValue in
+            pickerStateRepository.save(newValue)
         }
     }
 
@@ -50,33 +70,29 @@ struct SetupView: View {
     }
 
     private var roundsPicker: some View {
-        Menu {
+        CollapsiblePickerCard(
+            title: Localizations.Setup.rounds,
+            summary: viewModel.roundCount.formatted(),
+            isExpanded: roundsExpandedBinding
+        ) {
             Picker(Localizations.Setup.rounds, selection: roundCountBinding) {
                 ForEach(1...15, id: \.self) { count in
                     Text(count.formatted()).tag(count)
                 }
             }
-        } label: {
-            HStack {
-                Text(Localizations.Setup.rounds)
-                    .font(.title3.bold())
-                Spacer()
-                Text(viewModel.roundCount.formatted())
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption.bold())
-            }
-            .contentShape(Rectangle())
+            .pickerStyle(.wheel)
+            .frame(height: 122)
+            .clipped()
+            .accessibilityValue(viewModel.roundCount.formatted())
         }
-        .buttonStyle(.plain)
-        .tint(.primary)
-        .padding(Margin.standard)
-        .background(Color(.cardBackground), in: RoundedRectangle(cornerRadius: 18))
     }
 
     private var warningPicker: some View {
-        VStack(alignment: .leading, spacing: Margin.compact) {
-            Text(Localizations.Setup.Warning.title)
-                .font(.title3.bold())
+        CollapsiblePickerCard(
+            title: Localizations.Setup.Warning.title,
+            summary: roundWarningSummary,
+            isExpanded: warningExpandedBinding
+        ) {
             Picker(Localizations.Setup.Warning.title, selection: roundWarningBinding) {
                 Text(Localizations.Setup.Warning.disabled).tag(RoundWarning.disabled)
                 Text(Localizations.Setup.Warning.tenSeconds).tag(RoundWarning.tenSeconds)
@@ -84,8 +100,31 @@ struct SetupView: View {
             }
             .pickerStyle(.segmented)
         }
-        .padding(Margin.standard)
-        .background(Color(.cardBackground), in: RoundedRectangle(cornerRadius: 18))
+    }
+
+    private var soundSettingsLink: some View {
+        NavigationLink {
+            SoundSettingsView(viewModel: viewModel)
+        } label: {
+            HStack(spacing: Margin.standard) {
+                VStack(alignment: .leading, spacing: Margin.compact) {
+                    Text(Localizations.Setup.Sound.title)
+                        .font(.title3.bold())
+                        .foregroundStyle(.primary)
+                    Text(soundSettingsSummary)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer(minLength: Margin.standard)
+                Image(systemName: "chevron.right")
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+            }
+            .padding(Margin.standard)
+            .background(Color(.cardBackground), in: RoundedRectangle(cornerRadius: 18))
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder
@@ -157,6 +196,68 @@ struct SetupView: View {
 
     private var roundWarningBinding: Binding<RoundWarning> {
         Binding(get: { viewModel.roundWarning }, set: { viewModel.update(roundWarning: $0) })
+    }
+
+    private var preparationExpandedBinding: Binding<Bool> {
+        Binding(
+            get: { pickerState.isPreparationExpanded },
+            set: { pickerState.isPreparationExpanded = $0 }
+        )
+    }
+
+    private var roundsExpandedBinding: Binding<Bool> {
+        Binding(get: { pickerState.isRoundsExpanded }, set: { pickerState.isRoundsExpanded = $0 })
+    }
+
+    private var roundDurationExpandedBinding: Binding<Bool> {
+        Binding(
+            get: { pickerState.isRoundDurationExpanded },
+            set: { pickerState.isRoundDurationExpanded = $0 }
+        )
+    }
+
+    private var restExpandedBinding: Binding<Bool> {
+        Binding(get: { pickerState.isRestExpanded }, set: { pickerState.isRestExpanded = $0 })
+    }
+
+    private var warningExpandedBinding: Binding<Bool> {
+        Binding(get: { pickerState.isWarningExpanded }, set: { pickerState.isWarningExpanded = $0 })
+    }
+
+    private var roundWarningSummary: String {
+        switch viewModel.roundWarning {
+        case .disabled:
+            Localizations.Setup.Warning.disabled
+        case .tenSeconds:
+            Localizations.Setup.Warning.tenSeconds
+        case .thirtySeconds:
+            Localizations.Setup.Warning.thirtySeconds
+        }
+    }
+
+    private var soundSettingsSummary: String {
+        [
+            soundTitle(for: viewModel.roundStartSound),
+            soundTitle(for: viewModel.roundTransitionSound),
+            soundTitle(for: viewModel.warningSound)
+        ].joined(separator: " · ")
+    }
+
+    private func soundTitle(for sound: BundledTimerSound) -> String {
+        switch sound {
+        case .singleGong:
+            Localizations.SoundSettings.Sound.singleGong
+        case .tripleGong:
+            Localizations.SoundSettings.Sound.tripleGong
+        case .brightBell:
+            Localizations.SoundSettings.Sound.brightBell
+        case .bongoDrumTrill:
+            Localizations.SoundSettings.Sound.bongoDrumTrill
+        case .clickQuartetRhythm:
+            Localizations.SoundSettings.Sound.clickQuartetRhythm
+        case .rhythmicPattern:
+            Localizations.SoundSettings.Sound.rhythmicPattern
+        }
     }
 }
 

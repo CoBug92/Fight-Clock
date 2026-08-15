@@ -4,13 +4,12 @@ struct DurationPicker: View {
     let title: String
     @Binding var duration: Int
     let range: ClosedRange<Int>
+    @Binding var isExpanded: Bool
 
     private var options: DurationPickerOptions { DurationPickerOptions(range: range) }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Margin.compact) {
-            Text(title)
-                .font(.title3.bold())
+        CollapsiblePickerCard(title: title, summary: formattedDuration, isExpanded: $isExpanded) {
             HStack(spacing: 0) {
                 wheel(selection: minuteBinding, values: options.minutes, label: Localizations.Time.minutes)
                 Text(":")
@@ -26,8 +25,6 @@ struct DurationPicker: View {
             .accessibilityLabel(title)
             .accessibilityValue(formattedDuration)
         }
-        .padding(Margin.standard)
-        .background(Color(.cardBackground), in: RoundedRectangle(cornerRadius: 18))
     }
 
     private func wheel(selection: Binding<Int>, values: [Int], label: String) -> some View {
@@ -69,6 +66,13 @@ struct DurationPicker: View {
 
 #Preview {
     @Previewable @State var duration = 150
-    DurationPicker(title: "Round", duration: $duration, range: 10...900)
-        .padding()
+    @Previewable @State var isExpanded = true
+
+    DurationPicker(
+        title: "Round",
+        duration: $duration,
+        range: 10...900,
+        isExpanded: $isExpanded
+    )
+    .padding()
 }

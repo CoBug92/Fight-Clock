@@ -6,7 +6,9 @@ struct TimerRootView: View {
     var body: some View {
         Group {
             if viewModel.session == nil {
-                SetupView(viewModel: viewModel)
+                NavigationStack {
+                    SetupView(viewModel: viewModel)
+                }
                     .transition(.opacity.combined(with: .scale(scale: 0.98)))
             } else {
                 ActiveTimerView(viewModel: viewModel)

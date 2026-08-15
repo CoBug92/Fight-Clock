@@ -4,16 +4,30 @@ import Foundation
 @MainActor
 final class ForegroundSignalPlayer: NSObject, SignalPlaying {
     private var player: AVAudioPlayer?
+    private let soundResolver: SessionSoundResolver
 
-    func play(_ signal: SessionSignal) {
-        let name = switch signal {
-        case .roundStarted: "placeholder_round"
-        case .roundEnding: "placeholder_warning"
-        case .restStarted: "placeholder_rest"
-        case .workoutCompleted: "placeholder_complete"
-        }
+    init(soundResolver: SessionSoundResolver = SessionSoundResolver()) {
+        self.soundResolver = soundResolver
+    }
 
-        guard let url = Bundle.main.url(forResource: name, withExtension: "wav") else { return }
+    func play(_ signal: SessionSignal, configuration: TimerConfiguration) {
+        play(resourceName: soundResolver.resourceName(for: signal, configuration: configuration))
+    }
+
+    func preview(_ sound: BundledTimerSound) {
+        play(sound: sound)
+    }
+
+    private func play(resourceName: String) {
+        guard let sound = BundledTimerSound.allCases.first(where: { $0.resourceName == resourceName }) else { return }
+        play(sound: sound)
+    }
+
+    private func play(sound: BundledTimerSound) {
+        guard let url = Bundle.main.url(
+            forResource: sound.resourceName,
+            withExtension: sound.fileExtension
+        ) else { return }
 
         do {
             let session = AVAudioSession.sharedInstance()

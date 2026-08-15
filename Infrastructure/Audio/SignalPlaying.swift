@@ -2,5 +2,8 @@
 @MainActor
 protocol SignalPlaying: AnyObject {
     /// Воспроизводит соответствующий границе сессии звук без блокировки UI.
-    func play(_ signal: SessionSignal)
+    func play(_ signal: SessionSignal, configuration: TimerConfiguration)
+
+    /// Воспроизводит выбранный звук для предпрослушивания.
+    func preview(_ sound: BundledTimerSound)
 }

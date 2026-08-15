@@ -103,6 +103,10 @@ internal enum Localizations {
     internal static let rounds = Localizations.tr("Localizable", "setup.rounds", fallback: "Раунды")
     /// Точные раунды. Ничего лишнего.
     internal static let tagline = Localizations.tr("Localizable", "setup.tagline", fallback: "Точные раунды. Ничего лишнего.")
+    internal enum Sound {
+      /// Звуки раунда
+      internal static let title = Localizations.tr("Localizable", "setup.sound.title", fallback: "Звуки раунда")
+    }
     internal enum Warning {
       /// Выкл.
       internal static let disabled = Localizations.tr("Localizable", "setup.warning.disabled", fallback: "Выкл.")
@@ -112,6 +116,36 @@ internal enum Localizations {
       internal static let thirtySeconds = Localizations.tr("Localizable", "setup.warning.thirty_seconds", fallback: "30 сек")
       /// Сигнал до конца раунда
       internal static let title = Localizations.tr("Localizable", "setup.warning.title", fallback: "Сигнал до конца раунда")
+    }
+  }
+  internal enum SoundSettings {
+    /// Начало раунда
+    internal static let roundStart = Localizations.tr("Localizable", "sound_settings.round_start", fallback: "Начало раунда")
+    /// Используется при старте раунда, включая первый раунд после подготовки.
+    internal static let roundStartFooter = Localizations.tr("Localizable", "sound_settings.round_start_footer", fallback: "Используется при старте раунда, включая первый раунд после подготовки.")
+    /// Конец раунда и переход
+    internal static let roundTransition = Localizations.tr("Localizable", "sound_settings.round_transition", fallback: "Конец раунда и переход")
+    /// Используется в конце раунда и при завершении тренировки.
+    internal static let roundTransitionFooter = Localizations.tr("Localizable", "sound_settings.round_transition_footer", fallback: "Используется в конце раунда и при завершении тренировки.")
+    /// Звуки раунда
+    internal static let title = Localizations.tr("Localizable", "sound_settings.title", fallback: "Звуки раунда")
+    /// Предупреждение
+    internal static let warning = Localizations.tr("Localizable", "sound_settings.warning", fallback: "Предупреждение")
+    /// Используется для выбранного предупреждения перед концом раунда.
+    internal static let warningFooter = Localizations.tr("Localizable", "sound_settings.warning_footer", fallback: "Используется для выбранного предупреждения перед концом раунда.")
+    internal enum Sound {
+      /// Дробь на бонго
+      internal static let bongoDrumTrill = Localizations.tr("Localizable", "sound_settings.sound.bongo_drum_trill", fallback: "Дробь на бонго")
+      /// Яркий колокол
+      internal static let brightBell = Localizations.tr("Localizable", "sound_settings.sound.bright_bell", fallback: "Яркий колокол")
+      /// Ритм из четырёх щелчков
+      internal static let clickQuartetRhythm = Localizations.tr("Localizable", "sound_settings.sound.click_quartet_rhythm", fallback: "Ритм из четырёх щелчков")
+      /// Ритмический узор
+      internal static let rhythmicPattern = Localizations.tr("Localizable", "sound_settings.sound.rhythmic_pattern", fallback: "Ритмический узор")
+      /// Одиночный гонг
+      internal static let singleGong = Localizations.tr("Localizable", "sound_settings.sound.single_gong", fallback: "Одиночный гонг")
+      /// Тройной гонг
+      internal static let tripleGong = Localizations.tr("Localizable", "sound_settings.sound.triple_gong", fallback: "Тройной гонг")
     }
   }
   internal enum Stop {

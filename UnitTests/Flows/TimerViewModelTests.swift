@@ -26,6 +26,33 @@ final class TimerViewModelTests: XCTestCase {
         )
     }
 
+    func testSoundUpdatePersistsConfiguration() {
+        let fixture = Fixture()
+
+        fixture.viewModel.update(
+            roundStartSound: .brightBell,
+            roundTransitionSound: .tripleGong,
+            warningSound: .rhythmicPattern
+        )
+
+        XCTAssertEqual(
+            fixture.configurationRepository.value.soundConfiguration,
+            TimerSoundConfiguration(
+                roundStartSound: .brightBell,
+                roundTransitionSound: .tripleGong,
+                warningSound: .rhythmicPattern
+            )
+        )
+    }
+
+    func testPreviewDelegatesToSignalPlayer() {
+        let fixture = Fixture()
+
+        fixture.viewModel.preview(.brightBell)
+
+        XCTAssertEqual(fixture.signalPlayer.previewedSounds, [.brightBell])
+    }
+
     func testWarningPlaysOnceWhenThresholdIsCrossed() async throws {
         let start = Date(timeIntervalSince1970: 1_000)
         let configuration = TimerConfiguration(
@@ -43,7 +70,10 @@ final class TimerViewModelTests: XCTestCase {
         fixture.dateProvider.value = start.addingTimeInterval(51)
         try await Task.sleep(for: .milliseconds(300))
 
-        XCTAssertEqual(fixture.signalPlayer.signals, [.roundEnding(seconds: 10)])
+        XCTAssertEqual(
+            fixture.signalPlayer.playRequests,
+            [.init(signal: .roundEnding(seconds: 10), configuration: configuration)]
+        )
         await fixture.viewModel.stop()
     }
 
@@ -54,7 +84,7 @@ final class TimerViewModelTests: XCTestCase {
         await fixture.viewModel.start()
 
         XCTAssertNotNil(fixture.sessionRepository.value)
-        XCTAssertTrue(fixture.signalPlayer.signals.isEmpty)
+        XCTAssertTrue(fixture.signalPlayer.playRequests.isEmpty)
         XCTAssertEqual(fixture.notificationScheduler.scheduledStates.count, 1)
         let startedStates = await fixture.liveActivityController.startedStates
         XCTAssertEqual(startedStates.count, 1)
@@ -66,7 +96,7 @@ final class TimerViewModelTests: XCTestCase {
 
         await fixture.viewModel.start()
 
-        XCTAssertTrue(fixture.signalPlayer.signals.isEmpty)
+        XCTAssertTrue(fixture.signalPlayer.playRequests.isEmpty)
     }
 
     func testStopClearsSessionWithoutCompletionSignal() async {
@@ -77,7 +107,7 @@ final class TimerViewModelTests: XCTestCase {
         await fixture.viewModel.stop()
 
         XCTAssertNil(fixture.sessionRepository.value)
-        XCTAssertTrue(fixture.signalPlayer.signals.isEmpty)
+        XCTAssertTrue(fixture.signalPlayer.playRequests.isEmpty)
         let endedSessionIDs = await fixture.liveActivityController.endedSessionIDs
         XCTAssertEqual(endedSessionIDs.count, 1)
         XCTAssertFalse(fixture.idleTimerController.isDisabled)
@@ -108,7 +138,7 @@ final class TimerViewModelTests: XCTestCase {
         await fixture.viewModel.togglePause()
 
         XCTAssertNil(fixture.viewModel.session)
-        XCTAssertTrue(fixture.signalPlayer.signals.isEmpty)
+        XCTAssertTrue(fixture.signalPlayer.playRequests.isEmpty)
         let endedSessionIDs = await fixture.liveActivityController.endedSessionIDs
         XCTAssertEqual(endedSessionIDs, [initial.id])
     }
@@ -159,7 +189,7 @@ final class TimerViewModelTests: XCTestCase {
         fixture.dateProvider.value = start.addingTimeInterval(10)
         try await Task.sleep(for: .milliseconds(300))
 
-        XCTAssertTrue(fixture.signalPlayer.signals.isEmpty)
+        XCTAssertTrue(fixture.signalPlayer.playRequests.isEmpty)
         await fixture.viewModel.stop()
     }
 
@@ -243,8 +273,21 @@ private final class NotificationSchedulerSpy: NotificationScheduling {
 
 @MainActor
 private final class SignalPlayerSpy: SignalPlaying {
-    var signals: [SessionSignal] = []
-    func play(_ signal: SessionSignal) { signals.append(signal) }
+    struct PlayRequest: Equatable {
+        let signal: SessionSignal
+        let configuration: TimerConfiguration
+    }
+
+    var playRequests: [PlayRequest] = []
+    var previewedSounds: [BundledTimerSound] = []
+
+    func play(_ signal: SessionSignal, configuration: TimerConfiguration) {
+        playRequests.append(PlayRequest(signal: signal, configuration: configuration))
+    }
+
+    func preview(_ sound: BundledTimerSound) {
+        previewedSounds.append(sound)
+    }
 }
 
 private actor LiveActivityControllerSpy: LiveActivityControlling {

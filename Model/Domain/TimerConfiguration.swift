@@ -6,7 +6,8 @@ struct TimerConfiguration: Codable, Equatable, Sendable {
         roundDuration: 180,
         restDuration: 60,
         preparationDuration: 10,
-        roundWarning: .disabled
+        roundWarning: .tenSeconds,
+        soundConfiguration: .defaultValue
     )
 
     let roundCount: Int
@@ -14,19 +15,22 @@ struct TimerConfiguration: Codable, Equatable, Sendable {
     let restDuration: Int
     let preparationDuration: Int
     let roundWarning: RoundWarning
+    let soundConfiguration: TimerSoundConfiguration
 
     init(
         roundCount: Int,
         roundDuration: Int,
         restDuration: Int,
         preparationDuration: Int = 0,
-        roundWarning: RoundWarning = .disabled
+        roundWarning: RoundWarning = .disabled,
+        soundConfiguration: TimerSoundConfiguration = .defaultValue
     ) {
         self.roundCount = roundCount
         self.roundDuration = roundDuration
         self.restDuration = restDuration
         self.preparationDuration = preparationDuration
         self.roundWarning = roundWarning
+        self.soundConfiguration = soundConfiguration
     }
 
     var isValid: Bool {
@@ -46,5 +50,9 @@ struct TimerConfiguration: Codable, Equatable, Sendable {
         restDuration = try container.decode(Int.self, forKey: .restDuration)
         preparationDuration = try container.decodeIfPresent(Int.self, forKey: .preparationDuration) ?? 0
         roundWarning = try container.decodeIfPresent(RoundWarning.self, forKey: .roundWarning) ?? .disabled
+        soundConfiguration = try container.decodeIfPresent(
+            TimerSoundConfiguration.self,
+            forKey: .soundConfiguration
+        ) ?? .defaultValue
     }
 }
