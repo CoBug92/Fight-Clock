@@ -6,10 +6,10 @@ DerivedData
 .DerivedDataDevice
 
 ## Fastlane
-/Scripts/*.ipa
-/Scripts/*.dSYM.zip
-/Scripts/fastlane/report.xml
-/Scripts/fastlane/README.md
+/scripts/*.ipa
+/scripts/*.dSYM.zip
+/scripts/fastlane/report.xml
+/scripts/fastlane/README.md
 
 ## Various settings
 *.pbxuser

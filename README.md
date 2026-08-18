@@ -32,16 +32,16 @@ brew install xcodegen swiftgen
 
 ## Запуск проекта
 
-1. Проверьте значения в `Scripts/project.env`, прежде всего `TEAM_ID`.
+1. Проверьте значения в `scripts/.env`, прежде всего `TEAM_ID`.
 2. Сгенерируйте локализации и Xcode-проект:
 
    ```sh
-   Scripts/generate.sh
+   scripts/generate.sh
    ```
 
 3. Откройте `BoxingTimer.xcodeproj` и запустите схему `BoxingTimer` на iPhone или симуляторе iPhone с iOS 18+.
 
-Файл проекта генерируется и не хранится в Git. Источником настроек служат `Scripts/xcodegen/project.yml` и `Scripts/xcodegen/Application.yml`.
+Файл проекта генерируется и не хранится в Git. Источником настроек служат `scripts/xcodegen/project.yml` и `scripts/xcodegen/Application.yml`.
 
 ## Тесты
 
@@ -67,7 +67,7 @@ LiveActivity/           WidgetKit extension и App Intents
 Model/                  доменные модели
 Resources/              локализации, ассеты, звуки и plist
 UnitTests/              модульные тесты
-Scripts/                генерация проекта, ресурсов и доставка
+scripts/                генерация проекта, ресурсов и доставка
 docs/                   продуктовая и UX-документация
 ```
 

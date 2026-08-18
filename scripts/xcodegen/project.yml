@@ -1,0 +1,4 @@
+include:
+  - scripts/xcodegen/Application.yml
+
+name: BoxingTimer

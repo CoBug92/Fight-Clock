@@ -3,6 +3,13 @@ set -eu
 
 export PATH="$PATH:/opt/homebrew/bin"
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+PROJECT_ROOT="$(CDPATH= cd -- "$SCRIPT_DIR/../.." && pwd)"
+
+if [ -f "$PROJECT_ROOT/scripts/.env" ]; then
+  set -a
+  . "$PROJECT_ROOT/scripts/.env"
+  set +a
+fi
 
 command -v swiftgen >/dev/null 2>&1 || {
   echo "error: SwiftGen is required to generate resource symbols" >&2
