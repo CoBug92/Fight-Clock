@@ -2,6 +2,8 @@
 
 Fight Clock — минималистичный интервальный таймер для боксерских тренировок на iPhone. Пользователь задаёт время подготовки, количество и длительность раундов, отдых и предупреждающий сигнал, после чего управляет одной активной тренировкой без аккаунта и подключения к сети.
 
+В пользовательском интерфейсе приложение называется **Fight Clock**. Технические имена Xcode-проекта, схемы и Swift-модуля — `BoxingTimer`.
+
 ## Возможности
 
 - 1–15 раундов длительностью от 10 секунд до 15 минут;
@@ -59,14 +61,14 @@ xcodebuild test \
 ## Архитектура
 
 ```text
-App/                    сборка зависимостей и точка входа
-Core/                   движок сессии, расчёт границ и времени
-Flows/                  экраны настройки и активного таймера
-Infrastructure/         аудио, уведомления, хранение, Live Activity
-LiveActivity/           WidgetKit extension и App Intents
-Model/                  доменные модели
-Resources/              локализации, ассеты, звуки и plist
-UnitTests/              модульные тесты
+BoxingTimer/App/        сборка зависимостей и точка входа
+BoxingTimer/Core/       движок сессии, расчёт границ и времени
+BoxingTimer/Flows/      экраны настройки и активного таймера
+BoxingTimer/Infrastructure/ аудио, уведомления, хранение, Live Activity
+BoxingTimer/LiveActivity/    WidgetKit extension и App Intents
+BoxingTimer/Model/      доменные модели
+BoxingTimer/Resources/  локализации, ассеты, звуки и plist
+BoxingTimer/UnitTests/  модульные тесты
 scripts/                генерация проекта, ресурсов и доставка
 docs/                   продуктовая и UX-документация
 ```
@@ -77,12 +79,16 @@ docs/                   продуктовая и UX-документация
 
 - Silent Mode, Focus, телефонные звонки и настройки уведомлений могут заглушить фоновые сигналы.
 - Live Activity без push-обновлений актуальна только до ближайшей границы этапа; затем она предлагает открыть приложение для синхронизации.
-- В репозитории пока используются звуки-заглушки из `Resources/Audio`.
+- В репозитории пока используются звуки-заглушки из `BoxingTimer/Resources/Audio`.
 - История тренировок, пресеты, Apple Watch, iCloud, аккаунты и аналитика не входят в текущую версию.
 
 ## Документация
 
-- [Product Vision](docs/VISION.md)
-- [Product Requirements Document](docs/PRD.md)
-- [UX Flow](docs/UX_FLOW.md)
-- [Scripts and Delivery](docs/scripts.md)
+Документация в `docs/` описывает текущее состояние приложения и границы MVP. Технические утверждения в архитектурных разделах сверены с кодом `BoxingTimer/App/`, `BoxingTimer/Core/`, `BoxingTimer/Flows/`, `BoxingTimer/Infrastructure/`, `BoxingTimer/LiveActivity/`, `BoxingTimer/Model/`, `BoxingTimer/Resources/` и `scripts/` на 19 августа 2026 года.
+
+- [Product Vision](docs/product/vision.md)
+- [Product Requirements Document](docs/product/prd.md)
+- [UX Flow](docs/ux/flow.md)
+- [Technical Architecture](docs/tech/architecture.md)
+- [Локальные скрипты и доставка](docs/tech/scripts.md)
+- [Индекс документации](docs/index.md)
