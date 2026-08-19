@@ -8,9 +8,19 @@ struct ActiveTimerView: View {
         GeometryReader { proxy in
             Group {
                 if proxy.size.width > proxy.size.height {
-                    landscapeLayout
+                    landscapeLayout(
+                        timerDiameter: min(
+                            proxy.size.height - Margin.screen * 2,
+                            proxy.size.width * 0.38
+                        )
+                    )
                 } else {
-                    portraitLayout
+                    portraitLayout(
+                        timerDiameter: min(
+                            proxy.size.width - Margin.screen * 2,
+                            proxy.size.height * 0.47
+                        )
+                    )
                 }
             }
             .padding(Margin.screen)
@@ -31,25 +41,25 @@ struct ActiveTimerView: View {
         }
     }
 
-    private var portraitLayout: some View {
+    private func portraitLayout(timerDiameter: CGFloat) -> some View {
         VStack(spacing: Margin.section) {
             phaseLabel
             Spacer()
-            timeLabel
+            timeDisplay(diameter: timerDiameter)
             roundLabel
             Spacer()
             controls
         }
     }
 
-    private var landscapeLayout: some View {
+    private func landscapeLayout(timerDiameter: CGFloat) -> some View {
         HStack(spacing: Margin.section) {
             VStack(alignment: .leading, spacing: Margin.compact) {
                 phaseLabel
                 roundLabel
             }
             Spacer(minLength: Margin.standard)
-            timeLabel
+            timeDisplay(diameter: timerDiameter)
             Spacer(minLength: Margin.standard)
             controls
                 .frame(maxWidth: 190)
@@ -63,15 +73,32 @@ struct ActiveTimerView: View {
             .accessibilityAddTraits(.isHeader)
     }
 
-    private var timeLabel: some View {
-        Text(formattedTime)
-            .font(.system(size: 96, weight: .black, design: .rounded))
-            .monospacedDigit()
-            .minimumScaleFactor(0.45)
-            .lineLimit(1)
-            .contentTransition(.numericText(countsDown: true))
-            .accessibilityLabel(Localizations.Accessibility.remainingTime)
-            .accessibilityValue(formattedTime)
+    private func timeDisplay(diameter: CGFloat) -> some View {
+        ZStack {
+            Circle()
+                .stroke(.primary.opacity(.timerTrackOpacity), lineWidth: .timerRingWidth)
+
+            Circle()
+                .trim(from: 0, to: phaseProgress)
+                .stroke(
+                    .primary,
+                    style: StrokeStyle(lineWidth: .timerRingWidth, lineCap: .round)
+                )
+                .rotationEffect(.degrees(-90))
+                .animation(.linear(duration: .progressAnimationDuration), value: phaseProgress)
+
+            Text(formattedTime)
+                .font(.system(size: .timerFontSize, weight: .black, design: .rounded))
+                .monospacedDigit()
+                .minimumScaleFactor(.timerMinimumScaleFactor)
+                .lineLimit(1)
+                .padding(.horizontal, Margin.section)
+                .contentTransition(.numericText(countsDown: true))
+        }
+        .frame(width: diameter, height: diameter)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Localizations.Accessibility.remainingTime)
+        .accessibilityValue(formattedTime)
     }
 
     private var roundLabel: some View {
@@ -126,6 +153,23 @@ struct ActiveTimerView: View {
         String(format: "%d:%02d", viewModel.remainingSeconds / 60, viewModel.remainingSeconds % 60)
     }
 
+    private var phaseProgress: CGFloat {
+        guard let session = viewModel.session else { return 0 }
+
+        let duration: Int
+        switch session.phase {
+        case .preparation:
+            duration = session.configuration.preparationDuration
+        case .round:
+            duration = session.configuration.roundDuration
+        case .rest:
+            duration = session.configuration.restDuration
+        }
+
+        guard duration > 0 else { return 0 }
+        return min(1, max(0, CGFloat(viewModel.remainingSeconds) / CGFloat(duration)))
+    }
+
     private var background: some View {
         let phase = viewModel.session?.phase
         return LinearGradient(
@@ -143,6 +187,19 @@ struct ActiveTimerView: View {
         default: return [Color(.roundPhaseBackground), Color(.timerBackgroundEnd)]
         }
     }
+}
+
+// MARK: - Constants
+
+private extension CGFloat {
+    static let timerFontSize: CGFloat = 180
+    static let timerMinimumScaleFactor: CGFloat = 0.5
+    static let timerRingWidth: CGFloat = 14
+}
+
+private extension Double {
+    static let timerTrackOpacity = 0.2
+    static let progressAnimationDuration = 0.25
 }
 
 // MARK: - Preview
