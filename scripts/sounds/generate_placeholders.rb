@@ -4,7 +4,7 @@
 require "fileutils"
 
 sample_rate = 44_100
-output = File.expand_path("../../Resources/Audio", __dir__)
+output = File.expand_path("../../BoxingTimer/Resources/Audio", __dir__)
 FileUtils.mkdir_p(output)
 
 def clamp(sample)

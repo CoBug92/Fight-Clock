@@ -1,9 +1,9 @@
 strings:
   - inputs:
-      - "../../Resources/Localization/ru.lproj/Localizable.strings"
+      - "../../BoxingTimer/Resources/Localization/ru.lproj/Localizable.strings"
     outputs:
       - templateName: structured-swift5
-        output: "../../Resources/Generated/Localizations.swift"
+        output: "../../BoxingTimer/Resources/Generated/Localizations.swift"
         params:
           enumName: Localizations
           noComments: false

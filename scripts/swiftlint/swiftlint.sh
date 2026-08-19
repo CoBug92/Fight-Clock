@@ -17,4 +17,4 @@ cd "$PROJECT_ROOT"
 swiftlint lint \
     --config "$CONFIG_PATH" \
     --no-cache \
-    App Core Flows Infrastructure LiveActivity Model Resources UnitTests
+    BoxingTimer

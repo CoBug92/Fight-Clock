@@ -13,6 +13,6 @@ set -a
 . "$SCRIPT_DIR/.env"
 set +a
 
-mkdir -p "$PROJECT_DIR/Resources/Generated"
+mkdir -p "$PROJECT_DIR/BoxingTimer/Resources/Generated"
 "$SCRIPT_DIR/swiftgen/swiftgen.sh"
 "$SCRIPT_DIR/xcodegen/xcodegen.sh"
