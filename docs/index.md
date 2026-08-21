@@ -28,6 +28,7 @@ docs/
 ├── index.md
 ├── assets/
 ├── hypotheses/
+│   ├── apple-watch-remote-control-2026-08-21.md
 │   └── triple-duration-picker-2026-08-19.md
 ├── product/
 │   ├── prd.md
@@ -59,6 +60,7 @@ docs/
 | Документ | Статус |
 |---|---|
 | [Triple Duration Picker](hypotheses/triple-duration-picker-2026-08-19.md) | Отклонено после визуального ревью прототипа |
+| [Apple Watch: Time and Sound](hypotheses/apple-watch-remote-control-2026-08-21.md) | Ожидает одобрения проверки |
 
 ## Правила обновления
 
