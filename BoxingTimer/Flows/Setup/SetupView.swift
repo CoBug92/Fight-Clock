@@ -20,6 +20,7 @@ struct SetupView: View {
             ScrollView {
                 VStack(spacing: Margin.section) {
                     header
+                    notificationNotice
                     roundsPicker
                     DurationPicker(
                         title: Localizations.Setup.preparationDuration,
@@ -41,7 +42,6 @@ struct SetupView: View {
                     )
                     warningPicker
                     soundSettingsLink
-                    notificationNotice
                     startButton
                 }
                 .frame(maxWidth: 620)
@@ -130,20 +130,36 @@ struct SetupView: View {
     @ViewBuilder
     private var notificationNotice: some View {
         if viewModel.notificationPermission != .allowed {
-            VStack(alignment: .leading, spacing: Margin.compact) {
-                Label(Localizations.Permission.title, systemImage: "bell.badge")
-                    .font(.headline)
-                Text(Localizations.Permission.explanation)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                if viewModel.notificationPermission == .notDetermined {
-                    Button(Localizations.Permission.allow) {
-                        Task { await viewModel.requestNotifications() }
+            HStack(alignment: .top, spacing: Margin.standard) {
+                Image(systemName: "bell.badge.fill")
+                    .font(.title2)
+                    .foregroundStyle(.orange)
+                    .frame(width: 36, height: 36)
+                    .background(.orange.opacity(0.14), in: Circle())
+
+                VStack(alignment: .leading, spacing: Margin.compact) {
+                    Text(Localizations.Permission.title)
+                        .font(.headline)
+                    Text(Localizations.Permission.explanation)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    if viewModel.notificationPermission == .notDetermined {
+                        Button(Localizations.Permission.allow) {
+                            Task { await viewModel.requestNotifications() }
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.orange)
                     }
-                    .buttonStyle(.bordered)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .padding(Margin.standard)
             .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(.cardBackground), in: RoundedRectangle(cornerRadius: 18))
+            .overlay {
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(.orange.opacity(0.32), lineWidth: 1)
+            }
         }
     }
 
