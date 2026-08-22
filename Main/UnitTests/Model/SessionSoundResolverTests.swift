@@ -56,7 +56,7 @@ final class SessionSoundResolverTests: XCTestCase {
         )
         XCTAssertEqual(
             resolver.notificationSoundName(for: .roundEnding(seconds: 30), configuration: configuration),
-            "placeholder_bright.wav"
+            "click_quartet_rhythm.wav"
         )
         XCTAssertEqual(
             resolver.notificationSoundName(for: .workoutCompleted, configuration: configuration),

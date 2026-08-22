@@ -40,7 +40,7 @@ final class Fixture {
 final class AppSettingsOpenerSpy: AppSettingsOpening {
     // MARK: - Properties
 
-    private(set) var openCallCount = .zero
+    private(set) var openCallCount: Int = .zero
 
     // MARK: - Public methods
 
