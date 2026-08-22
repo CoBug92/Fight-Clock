@@ -17,4 +17,5 @@ cd "$PROJECT_ROOT"
 swiftlint lint \
     --config "$CONFIG_PATH" \
     --no-cache \
-    BoxingTimer
+    Main \
+    LiveActivity

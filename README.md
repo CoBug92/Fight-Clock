@@ -2,7 +2,7 @@
 
 Fight Clock — минималистичный интервальный таймер для боксерских тренировок на iPhone. Пользователь задаёт время подготовки, количество и длительность раундов, отдых и предупреждающий сигнал, после чего управляет одной активной тренировкой без аккаунта и подключения к сети.
 
-В пользовательском интерфейсе приложение называется **Fight Clock**. Технические имена Xcode-проекта, схемы и Swift-модуля — `BoxingTimer`.
+В пользовательском интерфейсе приложение называется **Fight Clock**. Техническое имя Xcode-проекта — `BoxingTimer`; основной target и Swift-модуль называются `Main`.
 
 ## Возможности
 
@@ -41,7 +41,7 @@ brew install xcodegen swiftgen
    scripts/generate.sh
    ```
 
-3. Откройте `BoxingTimer.xcodeproj` и запустите схему `BoxingTimer` на iPhone или симуляторе iPhone с iOS 18+.
+3. Откройте `BoxingTimer.xcodeproj` и запустите схему `Main` на iPhone или симуляторе iPhone с iOS 18+.
 
 Файл проекта генерируется и не хранится в Git. Источником настроек служат `scripts/xcodegen/project.yml` и `scripts/xcodegen/Application.yml`.
 
@@ -52,7 +52,7 @@ brew install xcodegen swiftgen
 ```sh
 xcodebuild test \
   -project BoxingTimer.xcodeproj \
-  -scheme BoxingTimer \
+  -scheme Main \
   -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max'
 ```
 
@@ -61,14 +61,14 @@ xcodebuild test \
 ## Архитектура
 
 ```text
-BoxingTimer/App/        сборка зависимостей и точка входа
-BoxingTimer/Core/       движок сессии, расчёт границ и времени
-BoxingTimer/Flows/      экраны настройки и активного таймера
-BoxingTimer/Infrastructure/ аудио, уведомления, хранение, Live Activity
-BoxingTimer/LiveActivity/    WidgetKit extension и App Intents
-BoxingTimer/Model/      доменные модели
-BoxingTimer/Resources/  локализации, ассеты, звуки и plist
-BoxingTimer/UnitTests/  модульные тесты
+Main/App/               сборка зависимостей и точка входа
+Main/Core/              движок сессии, расчёт границ и времени
+Main/Flows/             экраны настройки и активного таймера
+Main/Infrastructure/    аудио, уведомления, хранение, Live Activity
+Main/Model/             доменные модели
+Main/Resources/         локализации, ассеты, звуки и plist
+Main/UnitTests/         модульные тесты
+LiveActivity/           WidgetKit extension и App Intents
 scripts/                генерация проекта, ресурсов и доставка
 docs/                   продуктовая и UX-документация
 ```
@@ -79,12 +79,12 @@ docs/                   продуктовая и UX-документация
 
 - Silent Mode, Focus, телефонные звонки и настройки уведомлений могут заглушить фоновые сигналы.
 - Live Activity без push-обновлений актуальна только до ближайшей границы этапа; затем она предлагает открыть приложение для синхронизации.
-- В репозитории пока используются звуки-заглушки из `BoxingTimer/Resources/Audio`.
+- В репозитории пока используются звуки-заглушки из `Main/Resources/Audio`.
 - История тренировок, пресеты, Apple Watch, iCloud, аккаунты и аналитика не входят в текущую версию.
 
 ## Документация
 
-Документация в `docs/` описывает текущее состояние приложения и границы MVP. Технические утверждения в архитектурных разделах сверены с кодом `BoxingTimer/App/`, `BoxingTimer/Core/`, `BoxingTimer/Flows/`, `BoxingTimer/Infrastructure/`, `BoxingTimer/LiveActivity/`, `BoxingTimer/Model/`, `BoxingTimer/Resources/` и `scripts/` на 19 августа 2026 года.
+Документация в `docs/` описывает текущее состояние приложения и границы MVP. Технические утверждения в архитектурных разделах сверены с кодом `Main/`, `LiveActivity/` и `scripts/` на 19 августа 2026 года.
 
 - [Product Vision](docs/product/vision.md)
 - [Product Requirements Document](docs/product/prd.md)

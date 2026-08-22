@@ -129,7 +129,7 @@ def run_testflight_deploy
     use_automatic_signing: false,
     path: project_path,
     team_id: team_id,
-    targets: ["BoxingTimer"],
+    targets: ["Main"],
     profile_name: "match AppStore #{app_identifier}",
     code_sign_identity: "Apple Distribution"
   )
@@ -137,7 +137,7 @@ def run_testflight_deploy
     use_automatic_signing: false,
     path: project_path,
     team_id: team_id,
-    targets: ["BoxingTimerLiveActivity"],
+    targets: ["LiveActivity"],
     profile_name: "match AppStore #{extension_identifier}",
     code_sign_identity: "Apple Distribution"
   )

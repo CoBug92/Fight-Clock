@@ -3,8 +3,9 @@
 ## Назначение и границы
 
 Fight Clock — офлайн-интервальный таймер для боксерских тренировок на iPhone.
-Пользовательское имя приложения — **Fight Clock**; технические имена Xcode-проекта,
-схемы и Swift-модуля — `BoxingTimer`.
+Пользовательское имя приложения — **Fight Clock**; техническое имя Xcode-проекта —
+`BoxingTimer`, а targets и Swift-модули называются по роли: `Main`, `LiveActivity` и
+`MainUnitTests`.
 
 Перед изменением поведения прочитайте соответствующий канонический документ:
 
@@ -18,24 +19,24 @@ README — только входная точка; не дублируйте в 
 ## Структура и ответственность слоёв
 
 ```text
-BoxingTimer/App/            точка входа и production DI
-BoxingTimer/Core/           чистая логика сессии и расчёт её границ
-BoxingTimer/Model/Domain/   доменные типы и валидируемая конфигурация
-BoxingTimer/Flows/          SwiftUI-экраны и TimerViewModel
-BoxingTimer/Infrastructure/ UserDefaults, звук, уведомления, Live Activity, система
-BoxingTimer/LiveActivity/   WidgetKit extension и App Intents
-BoxingTimer/Resources/      локализации, ассеты, аудио и конфигурация
-BoxingTimer/UnitTests/      модульные тесты
+Main/App/                   точка входа и production DI
+Main/Core/                  чистая логика сессии и расчёт её границ
+Main/Model/Domain/          доменные типы и валидируемая конфигурация
+Main/Flows/                 SwiftUI-экраны и RootViewModel
+Main/Infrastructure/        UserDefaults, звук, уведомления, Live Activity, система
+Main/Resources/             локализации, ассеты, аудио и конфигурация
+Main/UnitTests/             модульные тесты
+LiveActivity/               WidgetKit extension и App Intents
 scripts/                    генерация, линт, Fastlane
 ```
 
 - `SessionEngine` не должен зависеть от SwiftUI, UserDefaults, ActivityKit,
   уведомлений или аудио. Логику переходов фаз и расчёта времени помещайте сюда;
-  добавляйте покрытие в `BoxingTimer/UnitTests/Core/`.
-- `TimerViewModel` координирует UI и инфраструктуру. Инъецируйте зависимости через
+  добавляйте покрытие в `Main/UnitTests/Core/`.
+- `RootViewModel` координирует UI и инфраструктуру. Инъецируйте зависимости через
   протоколы, чтобы сохранить проверяемость без системных сервисов.
 - Новый файл, необходимый Live Activity extension, нужно явно добавить в `sources`
-  target `BoxingTimerLiveActivity` в `scripts/xcodegen/Application.yml`.
+  target `LiveActivity` в `scripts/xcodegen/Application.yml`.
 - Настройки текущей активной сессии нельзя менять. Запуск фиксирует снимок
   `TimerConfiguration`.
 
@@ -56,14 +57,14 @@ scripts/                    генерация, линт, Fastlane
 ## Ресурсы, локализация и генерация
 
 - Не редактируйте вручную `BoxingTimer.xcodeproj` и
-  `BoxingTimer/Resources/Generated/`: это генерируемые и игнорируемые результаты.
+  `Main/Resources/Generated/`: это генерируемые и игнорируемые результаты.
   Источник конфигурации проекта — `scripts/xcodegen/Application.yml`; локализаций —
   `scripts/swiftgen/swiftgen.yml` и файлы ресурсов.
 - После изменений XcodeGen-спеки, локализаций или ресурсов выполните
   `scripts/generate.sh`. Для него требуется локальный `scripts/.env`; при отсутствии
   создайте его из `scripts/.env.example` и не коммитьте секреты.
-- Сохраняйте product name `Fight Clock` и техническое имя `BoxingTimer` в их
-  соответствующих контекстах; не смешивайте их в идентификаторах, схеме и UI.
+- Сохраняйте product name `Fight Clock` и техническое имя проекта `BoxingTimer` в их
+  соответствующих контекстах; не смешивайте их в идентификаторах, targets и UI.
 
 ## Стиль Swift
 
@@ -87,7 +88,7 @@ scripts/generate.sh
 
 ```sh
 scripts/swiftlint/swiftlint.sh
-xcodebuild test -project BoxingTimer.xcodeproj -scheme BoxingTimer \
+xcodebuild test -project BoxingTimer.xcodeproj -scheme Main \
   -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' \
   CODE_SIGNING_ALLOWED=NO test
 ```

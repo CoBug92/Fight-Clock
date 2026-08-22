@@ -13,77 +13,89 @@ settings:
     MARKETING_VERSION: 1.0.2
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: ${TEAM_ID}
+    ENABLE_USER_SCRIPT_SANDBOXING: true
+    CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: true
 
 fileGroups:
-  - ../../BoxingTimer/Resources/Assets
-  - ../../BoxingTimer/Resources/Audio
-  - ../../BoxingTimer/Resources/Configuration
-  - ../../BoxingTimer/Resources/Generated
-  - ../../BoxingTimer/Resources/Localization
+  - ../../Main/Resources/Assets
+  - ../../Main/Resources/Audio
+  - ../../Main/Resources/Configuration
+  - ../../Main/Resources/Generated
+  - ../../Main/Resources/Localization
 
 targets:
-  BoxingTimer:
+  Main:
     type: application
     platform: iOS
     sources:
-      - ../../BoxingTimer/App
-      - ../../BoxingTimer/Core
-      - ../../BoxingTimer/Flows
-      - ../../BoxingTimer/Infrastructure
-      - ../../BoxingTimer/Model
-      - path: ../../BoxingTimer/Resources
+      - ../../Main/App
+      - ../../Main/Core
+      - ../../Main/Flows
+      - ../../Main/Infrastructure
+      - ../../LiveActivity/Infrastructure/Client
+      - ../../Main/Model
+      - path: ../../LiveActivity/Model/Shared/BoxingTimerActivityAttributes.swift
+      - path: ../../Main/Resources
         excludes:
           - Generated/Localizations.swift
-      - ../../BoxingTimer/Resources/Generated/Localizations.swift
+      - ../../Main/Resources/Generated/Localizations.swift
     dependencies:
-      - target: BoxingTimerLiveActivity
+      - target: LiveActivity
         embed: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ru.kostyuchenko.fightclock
         PRODUCT_NAME: FightClock
-        PRODUCT_MODULE_NAME: BoxingTimer
+        PRODUCT_MODULE_NAME: Main
         TARGETED_DEVICE_FAMILY: 1
-        INFOPLIST_FILE: BoxingTimer/Resources/Configuration/Info.plist
-        CODE_SIGN_ENTITLEMENTS: BoxingTimer/Resources/Configuration/BoxingTimer.entitlements
+        INFOPLIST_FILE: Main/Resources/Configuration/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Main/Resources/Configuration/BoxingTimer.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     scheme:
       testTargets:
-        - BoxingTimerUnitTests
+        - MainUnitTests
 
-  BoxingTimerLiveActivity:
+  LiveActivity:
     type: app-extension
     platform: iOS
     sources:
-      - ../../BoxingTimer/LiveActivity
-      - path: ../../BoxingTimer/Model/Domain
-      - path: ../../BoxingTimer/Core/Session
-      - path: ../../BoxingTimer/Infrastructure/Persistence/SharedDefaults.swift
-      - path: ../../BoxingTimer/Infrastructure/Persistence/SessionRepository.swift
-      - path: ../../BoxingTimer/Infrastructure/Persistence/UserDefaultsSessionRepository.swift
-      - path: ../../BoxingTimer/Infrastructure/Notifications/NotificationScheduler.swift
-      - path: ../../BoxingTimer/Infrastructure/Notifications/NotificationScheduling.swift
-      - path: ../../BoxingTimer/Infrastructure/Notifications/NotificationPermission.swift
-      - path: ../../BoxingTimer/Resources/Localization
-      - path: ../../BoxingTimer/Resources/Audio
-      - path: ../../BoxingTimer/Resources/Generated/Localizations.swift
+      - ../../LiveActivity/App
+      - ../../LiveActivity/Flows
+      - ../../LiveActivity/Infrastructure
+      - ../../LiveActivity/Model
+      - ../../LiveActivity/Resources
+      - path: ../../Main/Core/Presentation/Margin.swift
+      - path: ../../Main/Core/Presentation/SFSymbol.swift
+      - path: ../../Main/Core/Presentation/TechnicalString.swift
+      - path: ../../Main/Infrastructure/System/AppSettingsOpening.swift
+      - path: ../../Main/Model/Domain
+      - path: ../../Main/Core/Session
+      - path: ../../Main/Infrastructure/Persistence/SharedDefaults.swift
+      - path: ../../Main/Infrastructure/Persistence/Session/SessionRepository.swift
+      - path: ../../Main/Infrastructure/Persistence/Session/UserDefaultsSessionRepository.swift
+      - path: ../../Main/Infrastructure/Notifications/NotificationScheduler.swift
+      - path: ../../Main/Infrastructure/Notifications/NotificationScheduling.swift
+      - path: ../../Main/Infrastructure/Notifications/NotificationPermission.swift
+      - path: ../../Main/Resources/Localization
+      - path: ../../Main/Resources/Audio
+      - path: ../../Main/Resources/Generated/Localizations.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ru.kostyuchenko.fightclock.liveactivity
         PRODUCT_NAME: FightClockLiveActivity
-        PRODUCT_MODULE_NAME: BoxingTimerLiveActivity
+        PRODUCT_MODULE_NAME: LiveActivity
         TARGETED_DEVICE_FAMILY: 1
-        INFOPLIST_FILE: BoxingTimer/LiveActivity/Info.plist
-        CODE_SIGN_ENTITLEMENTS: BoxingTimer/LiveActivity/BoxingTimerLiveActivity.entitlements
+        INFOPLIST_FILE: LiveActivity/Resources/Configuration/Info.plist
+        CODE_SIGN_ENTITLEMENTS: LiveActivity/Resources/Configuration/BoxingTimerLiveActivity.entitlements
         SKIP_INSTALL: true
 
-  BoxingTimerUnitTests:
+  MainUnitTests:
     type: bundle.unit-test
     platform: iOS
     sources:
-      - ../../BoxingTimer/UnitTests
+      - ../../Main/UnitTests
     dependencies:
-      - target: BoxingTimer
+      - target: Main
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ru.kostyuchenko.fightclock.unittests

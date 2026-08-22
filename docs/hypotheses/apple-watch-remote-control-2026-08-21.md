@@ -34,13 +34,13 @@
 
 ### Подтверждено текущим репозиторием
 
-- Fight Clock — offline-first интервальный таймер для iPhone; текущая активная сессия сохраняется в `UserDefaults` и координируется `TimerViewModel`.
+- Fight Clock — offline-first интервальный таймер для iPhone; текущая активная сессия сохраняется в `UserDefaults` и координируется `RootViewModel`.
 - Единственное состояние сессии содержит фазу, раунд, границу фазы, остаток при паузе и флаг паузы. `SessionEngine` пересчитывает состояние от абсолютного времени.
 - На iPhone реализованы отдельные звуки начала раунда, отдыха, завершения и предупреждения; будущие фоновые сигналы планируются заранее при наличии разрешения на уведомления.
 - `staleDate` Live Activity равен `phaseEndDate`: без выполнения кода приложения она не может достоверно переключить фазу после ближайшей границы.
 - Apple Watch не входит в текущий MVP; Watch target в репозитории отсутствует.
 
-Источники: `AGENT.md`, `README.md`, `docs/product/vision.md`, `docs/product/prd.md`, `docs/tech/architecture.md`, `BoxingTimer/Flows/Timer/TimerViewModel.swift`, `BoxingTimer/Infrastructure/Audio`, `BoxingTimer/Infrastructure/Notifications`, `BoxingTimer/Infrastructure/LiveActivity/LiveActivityController.swift`.
+Источники: `AGENT.md`, `README.md`, `docs/product/vision.md`, `docs/product/prd.md`, `docs/tech/architecture.md`, `Main/Flows/Root/RootViewModel.swift`, `Main/Infrastructure/Audio`, `Main/Infrastructure/Notifications`, `Main/Infrastructure/LiveActivity/LiveActivityController.swift`.
 
 ### Сигнал из discovery
 

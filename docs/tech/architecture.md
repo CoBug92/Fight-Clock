@@ -4,7 +4,7 @@
 
 Документ описывает текущее устройство iOS-приложения Fight Clock для разработчиков и ревьюеров. Источник фактов: Swift-код, XcodeGen/SwiftGen-конфигурация и существующая документация на 19 августа 2026 года.
 
-Продуктовое имя в интерфейсе — **Fight Clock**. Технические имена проекта, схемы и Swift-модуля — `BoxingTimer`.
+Продуктовое имя в интерфейсе — **Fight Clock**. Техническое имя проекта — `BoxingTimer`; targets и Swift-модули называются `Main` и `LiveActivity`.
 
 ## Границы
 
@@ -12,13 +12,13 @@
 
 ## Проверенные источники
 
-- `BoxingTimer/App/AppDependencies.swift`, `BoxingTimer/App/BoxingTimerApp.swift`;
-- `BoxingTimer/Core/Session/*`;
-- `BoxingTimer/Model/Domain/*`;
-- `BoxingTimer/Flows/Setup/*`, `BoxingTimer/Flows/Timer/*`, `BoxingTimer/Flows/Active/*`;
-- `BoxingTimer/Infrastructure/Persistence/*`, `BoxingTimer/Infrastructure/Notifications/*`, `BoxingTimer/Infrastructure/Audio/*`, `BoxingTimer/Infrastructure/LiveActivity/*`, `BoxingTimer/Infrastructure/System/*`;
-- `BoxingTimer/LiveActivity/*`;
-- `BoxingTimer/Resources/Configuration/*`, `BoxingTimer/Resources/Localization/*`, `BoxingTimer/Resources/Audio/*`;
+- `Main/App/AppDependencies.swift`, `Main/App/BoxingTimerApp.swift`;
+- `Main/Core/Session/*`;
+- `Main/Model/Domain/*`;
+- `Main/Flows/Setup/*`, `Main/Flows/Root/*`, `Main/Flows/Active/*`;
+- `Main/Infrastructure/Persistence/*`, `Main/Infrastructure/Notifications/*`, `Main/Infrastructure/Audio/*`, `Main/Infrastructure/LiveActivity/*`, `Main/Infrastructure/System/*`;
+- `LiveActivity/*`;
+- `Main/Resources/Configuration/*`, `Main/Resources/Localization/*`, `Main/Resources/Audio/*`;
 - `scripts/generate.sh`, `scripts/xcodegen/*`, `scripts/swiftgen/*`, `scripts/fastlane/*`.
 
 Тесты использовались только как дополнительный сигнал контракта, без документирования отдельных test cases.
@@ -27,31 +27,31 @@
 
 ```text
 +----------------------+      +----------------------+
-| BoxingTimer/App/     | ---> | BoxingTimer/Flows/   |
+| Main/App/            | ---> | Main/Flows/          |
 | entry point, DI      |      | SwiftUI screens, VM  |
 +----------------------+      +----------+-----------+
                                          |
                                          v
 +----------------------+      +----------------------+
-| BoxingTimer/Infrastructure/ | <--- | BoxingTimer/Core/ |
+| Main/Infrastructure/ | <--- | Main/Core/          |
 | persistence, audio,  |      | session engine,      |
 | notifications, live  |      | boundary planning    |
 | activity, system     |      +----------+-----------+
 +----------------------+                 |
           ^                              v
           |                   +----------------------+
-          +------------------>| BoxingTimer/Model/   |
+          +------------------>| Main/Model/          |
                               | domain state/types   |
                               +----------------------+
 ```
 
-`AppDependencies` собирает production-зависимости для `TimerViewModel`: репозитории UserDefaults, планировщик уведомлений, foreground-плеер, контроллер Live Activity, контроллер idle timer и системный поставщик даты.
+`AppDependencies` собирает production-зависимости для `RootViewModel`: репозитории UserDefaults, планировщик уведомлений, foreground-плеер, контроллер Live Activity, контроллер idle timer и системный поставщик даты.
 
 ## Основные компоненты
 
 | Компонент | Ответственность |
 |---|---|
-| `TimerViewModel` | Главный координатор UI-состояния, запуска, паузы, остановки, синхронизации, звуков, уведомлений и Live Activity. |
+| `RootViewModel` | Главный координатор UI-состояния, запуска, паузы, остановки, синхронизации, звуков, уведомлений и Live Activity. |
 | `SessionEngine` | Чистая доменная логика запуска, переходов между фазами, паузы, продолжения и расчёта остатка. |
 | `SessionBoundaryPlanner` | Построение будущих границ сессии для локальных уведомлений. |
 | `TimerConfiguration` | Валидируемый снимок настроек: раунды, длительности, предупреждение и выбранные звуки. |
@@ -64,8 +64,8 @@
 
 ```mermaid
 sequenceDiagram
-    participant UI as SetupView/TimerRootView
-    participant VM as TimerViewModel
+    participant UI as SetupView/RootView
+    participant VM as RootViewModel
     participant Engine as SessionEngine
     participant Store as UserDefaults repositories
     participant Notifications as NotificationScheduler
@@ -108,13 +108,13 @@ sequenceDiagram
 - подготовка: `0...300` секунд;
 - все длительности кратны 5 секундам.
 
-Пока сессия активна, `TimerViewModel.update(...)` не меняет конфигурацию.
+Пока сессия активна, `RootViewModel.update(...)` не меняет конфигурацию.
 
 Setup-экран не даёт пользователю ввести произвольное число с клавиатуры: длительности выбираются через `DurationPicker`, где минуты и секунды строятся из допустимого диапазона, а секунды идут с шагом 5.
 
 ## Переходы и сигналы
 
-`SessionEngine.resolve(_:at:)` последовательно догоняет состояние до текущего времени. Если приложение пропустило несколько границ, engine может вернуть несколько сигналов, но foreground-воспроизведение в `TimerViewModel` выбирает только релевантный сигнал рядом с недавней границей и не проигрывает старые переходы задним числом.
+`SessionEngine.resolve(_:at:)` последовательно догоняет состояние до текущего времени. Если приложение пропустило несколько границ, engine может вернуть несколько сигналов, но foreground-воспроизведение в `RootViewModel` выбирает только релевантный сигнал рядом с недавней границей и не проигрывает старые переходы задним числом.
 
 Предупреждение конца раунда создаётся только когда:
 
@@ -151,7 +151,7 @@ Foreground-сигналы и preview используют встроенные �
 
 В модели конфигурации есть три независимые роли звука: `roundStartSound`, `roundTransitionSound` и `warningSound`. Начало отдыха и завершение тренировки используют общий `roundTransitionSound`, отдельного звука "финал тренировки" в текущей реализации нет.
 
-Для foreground-воспроизведения используется точный выбранный ресурс. Для системных уведомлений `NotificationScheduler` оставляет только те имена, которые безопасно поддерживаются как notification sound: если пользователь выбрал `mp3`, планировщик подставляет совместимый `.wav` fallback для соответствующего сигнала.
+Для foreground-воспроизведения и системных уведомлений используется точный выбранный WAV-ресурс.
 
 `ForegroundSignalPlayer` использует категорию AVAudioSession `.playback` с `.duckOthers` и деактивирует сессию после завершения воспроизведения.
 

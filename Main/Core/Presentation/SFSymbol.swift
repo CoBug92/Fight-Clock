@@ -1,0 +1,16 @@
+enum SFSymbol {
+    static let bellBadgeFill = "bell.badge.fill"
+    static let checkmarkCircleFill = "checkmark.circle.fill"
+    static let chevronDown = "chevron.down"
+    static let chevronRight = "chevron.right"
+    static let chevronUp = "chevron.up"
+    static let circle = "circle"
+    static let compactTimerWarning = "exclamationmark.arrow.trianglehead.2.clockwise.rotate.90"
+    static let figureBoxing = "figure.boxing"
+    static let figureCooldown = "figure.cooldown"
+    static let heartCircleFill = "heart.circle.fill"
+    static let pauseCircleFill = "pause.circle.fill"
+    static let pauseFill = "pause.fill"
+    static let playFill = "play.fill"
+    static let arrowClockwiseCircleFill = "arrow.clockwise.circle.fill"
+}

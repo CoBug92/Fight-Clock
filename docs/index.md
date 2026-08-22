@@ -2,7 +2,7 @@
 
 Этот раздел содержит устойчивую документацию по продукту, UX, архитектуре и локальным инструментам Fight Clock.
 
-Продуктовое имя приложения — **Fight Clock**. Технические имена проекта, схемы и Swift-модуля в репозитории — `BoxingTimer`.
+Продуктовое имя приложения — **Fight Clock**. Техническое имя проекта в репозитории — `BoxingTimer`; targets и Swift-модули называются `Main` и `LiveActivity`.
 
 ## Для кого
 
@@ -46,11 +46,11 @@ docs/
 
 Актуализация от 19 августа 2026 года сверена с текущими файлами:
 
-- доменная логика и модель: `BoxingTimer/Core/Session`, `BoxingTimer/Model/Domain`;
-- SwiftUI-потоки: `BoxingTimer/Flows/Setup`, `BoxingTimer/Flows/Timer`, `BoxingTimer/Flows/Active`;
-- инфраструктура: `BoxingTimer/Infrastructure/Persistence`, `BoxingTimer/Infrastructure/Notifications`, `BoxingTimer/Infrastructure/Audio`, `BoxingTimer/Infrastructure/LiveActivity`, `BoxingTimer/Infrastructure/System`;
-- Live Activity extension и intents: `BoxingTimer/LiveActivity`;
-- ресурсы и локализации: `BoxingTimer/Resources/Audio`, `BoxingTimer/Resources/Localization`, `BoxingTimer/Resources/Configuration`;
+- доменная логика и модель: `Main/Core/Session`, `Main/Model/Domain`;
+- SwiftUI-потоки: `Main/Flows/Setup`, `Main/Flows/Root`, `Main/Flows/Active`;
+- инфраструктура: `Main/Infrastructure/Persistence`, `Main/Infrastructure/Notifications`, `Main/Infrastructure/Audio`, `Main/Infrastructure/LiveActivity`, `Main/Infrastructure/System`;
+- Live Activity extension и intents: `LiveActivity`;
+- ресурсы и локализации: `Main/Resources/Audio`, `Main/Resources/Localization`, `Main/Resources/Configuration`;
 - генерация проекта и доставка: `scripts/xcodegen`, `scripts/swiftgen`, `scripts/fastlane`, `scripts/generate.sh`.
 
 Корневой `AGENTS.md` в рабочей области отсутствует; применяются инструкции, переданные пользователем в задаче.

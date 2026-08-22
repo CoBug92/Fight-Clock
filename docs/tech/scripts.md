@@ -29,7 +29,7 @@ cp scripts/.env.example scripts/.env
 Ожидаемые значения:
 
 - `PROJECT_NAME=BoxingTimer`
-- `TARGET_NAME=BoxingTimer`
+- `TARGET_NAME=Main`
 - `BUNDLE_ID=ru.kostyuchenko.fightclock`
 - `TEAM_ID=<ваш Apple Developer Team ID>`
 
