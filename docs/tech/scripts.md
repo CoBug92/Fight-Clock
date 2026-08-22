@@ -13,8 +13,6 @@ scripts/
 ├── xcodegen/                      # XcodeGen-спеки и shell-обёртка
 ├── bootstrap.sh                   # установка зависимостей, генерация и открытие проекта
 ├── generate.sh                    # каноническая точка локальной генерации
-├── generate_github_social_preview.py
-│                                  # генерация `docs/assets/github-social-preview.png`
 └── .env.example                   # шаблон локальных несекретных переменных
 ```
 

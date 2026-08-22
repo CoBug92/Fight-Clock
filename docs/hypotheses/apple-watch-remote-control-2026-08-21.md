@@ -40,7 +40,7 @@
 - `staleDate` Live Activity равен `phaseEndDate`: без выполнения кода приложения она не может достоверно переключить фазу после ближайшей границы.
 - Apple Watch не входит в текущий MVP; Watch target в репозитории отсутствует.
 
-Источники: `AGENT.md`, `README.md`, `docs/product/vision.md`, `docs/product/prd.md`, `docs/tech/architecture.md`, `Main/Flows/Root/RootViewModel.swift`, `Main/Infrastructure/Audio`, `Main/Infrastructure/Notifications`, `Main/Infrastructure/LiveActivity/LiveActivityController.swift`.
+Источники: `AGENT.md`, `README.md`, `docs/product/vision.md`, `docs/product/prd.md`, `docs/tech/architecture.md`, `Main/Flows/Root/RootViewModel.swift`, `Main/Infrastructure/Audio`, `Main/Infrastructure/Notifications`, `LiveActivity/Infrastructure/Client/LiveActivityController.swift`.
 
 ### Сигнал из discovery
 

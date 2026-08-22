@@ -2,7 +2,7 @@
 
 ## Назначение
 
-Документ описывает текущее устройство iOS-приложения Fight Clock для разработчиков и ревьюеров. Источник фактов: Swift-код, XcodeGen/SwiftGen-конфигурация и существующая документация на 19 августа 2026 года.
+Документ описывает текущее устройство iOS-приложения Fight Clock для разработчиков и ревьюеров. Источник фактов: Swift-код, XcodeGen/SwiftGen-конфигурация и существующая документация на 22 августа 2026 года.
 
 Продуктовое имя в интерфейсе — **Fight Clock**. Техническое имя проекта — `BoxingTimer`; targets и Swift-модули называются `Main` и `LiveActivity`.
 
@@ -16,8 +16,8 @@
 - `Main/Core/Session/*`;
 - `Main/Model/Domain/*`;
 - `Main/Flows/Setup/*`, `Main/Flows/Root/*`, `Main/Flows/Active/*`;
-- `Main/Infrastructure/Persistence/*`, `Main/Infrastructure/Notifications/*`, `Main/Infrastructure/Audio/*`, `Main/Infrastructure/LiveActivity/*`, `Main/Infrastructure/System/*`;
-- `LiveActivity/*`;
+- `Main/Infrastructure/Persistence/*`, `Main/Infrastructure/Notifications/*`, `Main/Infrastructure/Audio/*`, `Main/Infrastructure/System/*`;
+- `LiveActivity/Flows/*`, `LiveActivity/Infrastructure/Client/*`, `LiveActivity/Infrastructure/AppIntents/*`, `LiveActivity/Model/*`;
 - `Main/Resources/Configuration/*`, `Main/Resources/Localization/*`, `Main/Resources/Audio/*`;
 - `scripts/generate.sh`, `scripts/xcodegen/*`, `scripts/swiftgen/*`, `scripts/fastlane/*`.
 
@@ -139,7 +139,7 @@ Setup-экран не даёт пользователю ввести произ�
 
 Live Activity содержит только данные отображения: фазу, текущий и общий номер раунда, `phaseEndDate`, `pausedRemaining` и флаг паузы. `staleDate` равен `phaseEndDate`, поэтому без выполнения кода приложения системное отображение не обещает автономно переключать этапы после ближайшей границы.
 
-`PauseSessionIntent` и `ResumeSessionIntent` выполняются в extension: они читают `SessionState` из общего UserDefaults, пересчитывают состояние через `SessionEngine`, отменяют или заново планируют уведомления и обновляют ActivityKit-состояние. Команды Stop в Live Activity нет.
+`PauseSessionIntent` и `ResumeSessionIntent` объявлены в extension: при вызове они читают `SessionState` из общего UserDefaults, пересчитывают состояние через `SessionEngine`, отменяют или заново планируют уведомления и обновляют ActivityKit-состояние. Текущие Lock Screen и Dynamic Island представления не содержат интерактивных элементов, которые вызывают эти intents; команды Stop также нет.
 
 ## Звук
 

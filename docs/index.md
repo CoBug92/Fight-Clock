@@ -44,12 +44,12 @@ docs/
 
 ## Статус проверки
 
-Актуализация от 19 августа 2026 года сверена с текущими файлами:
+Актуализация от 22 августа 2026 года сверена с текущими файлами:
 
 - доменная логика и модель: `Main/Core/Session`, `Main/Model/Domain`;
 - SwiftUI-потоки: `Main/Flows/Setup`, `Main/Flows/Root`, `Main/Flows/Active`;
-- инфраструктура: `Main/Infrastructure/Persistence`, `Main/Infrastructure/Notifications`, `Main/Infrastructure/Audio`, `Main/Infrastructure/LiveActivity`, `Main/Infrastructure/System`;
-- Live Activity extension и intents: `LiveActivity`;
+- инфраструктура основного приложения: `Main/Infrastructure/Persistence`, `Main/Infrastructure/Notifications`, `Main/Infrastructure/Audio`, `Main/Infrastructure/System`;
+- Live Activity extension, клиент и intents: `LiveActivity/Flows`, `LiveActivity/Infrastructure/Client`, `LiveActivity/Infrastructure/AppIntents`, `LiveActivity/Model`;
 - ресурсы и локализации: `Main/Resources/Audio`, `Main/Resources/Localization`, `Main/Resources/Configuration`;
 - генерация проекта и доставка: `scripts/xcodegen`, `scripts/swiftgen`, `scripts/fastlane`, `scripts/generate.sh`.
 
@@ -60,7 +60,7 @@ docs/
 | Документ | Статус |
 |---|---|
 | [Triple Duration Picker](hypotheses/triple-duration-picker-2026-08-19.md) | Отклонено после визуального ревью прототипа |
-| [Apple Watch: Time and Sound](hypotheses/apple-watch-remote-control-2026-08-21.md) | Ожидает одобрения проверки |
+| [Apple Watch: Time and Sound](hypotheses/apple-watch-remote-control-2026-08-21.md) | Отменена по результатам технической проверки |
 
 ## Правила обновления
 
