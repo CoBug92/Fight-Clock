@@ -1,5 +1,22 @@
 # Локальные скрипты и доставка
 
+## Публичные страницы App Store
+
+Исходники публичных страниц находятся в `docs/site/`: `support/index.html` для
+Support URL и `privacy/index.html` для Privacy Policy URL. GitHub Pages
+автоматически публикует содержимое `docs/` из ветки `master` после каждого push,
+если в Settings → Pages выбран `Deploy from a branch` → `master` → `/docs`.
+
+Перед первой публикацией в настройках репозитория GitHub Pages необходимо
+выбрать источник **GitHub Actions**. После успешного выполнения workflow для
+этого репозитория используются следующие URL:
+
+- `https://cobug92.github.io/Fight-Clock/site/support/`
+- `https://cobug92.github.io/Fight-Clock/site/privacy/`
+
+GitHub Pages и App Store Connect не изменяются этим репозиторием автоматически:
+их настройка и заполнение URL остаются отдельными внешними действиями.
+
 Каталог `scripts/` содержит локальные утилиты генерации проекта, вспомогательные обёртки над XcodeGen и SwiftGen, а также Fastlane-конфигурацию для сборки и доставки Fight Clock.
 
 ## Структура
