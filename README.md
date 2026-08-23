@@ -92,3 +92,14 @@ docs/                   продуктовая и UX-документация
 - [Technical Architecture](docs/tech/architecture.md)
 - [Локальные скрипты и доставка](docs/tech/scripts.md)
 - [Индекс документации](docs/index.md)
+
+## Поддержка и приватность
+
+Публичные страницы для App Store публикуются через GitHub Pages после включения
+источника публикации **GitHub Actions** в настройках репозитория:
+
+- Support URL: `https://cobug92.github.io/Fight-Clock/support/`
+- Privacy Policy URL: `https://cobug92.github.io/Fight-Clock/privacy/`
+
+Исходники сайта находятся в `site/`; workflow `.github/workflows/pages.yml`
+публикует их при изменении в ветке `master`.
