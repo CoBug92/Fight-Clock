@@ -60,6 +60,7 @@
 | `ForegroundSignalPlayer` | Воспроизведение foreground-сигналов и preview выбранных звуков через `AVAudioPlayer`. |
 | `LiveActivityController` | Создание, обновление и завершение ActivityKit Live Activity. |
 | `FirebaseAnalyticsTracker` | Отправляет в Firebase Analytics анонимные события жизненного цикла тренировки через проектный контракт `AnalyticsTracking`. |
+| Firebase Crashlytics | Автоматически фиксирует необработанные сбои и загружает dSYM основного приложения для читаемых отчётов. |
 
 ## Поток сессии
 
@@ -132,7 +133,7 @@ Setup-экран не даёт пользователю ввести произ�
 
 ## Аналитика
 
-Основной target подключает зафиксированную версию `FirebaseAnalyticsCore` через Swift Package Manager — вариант Firebase Analytics без IDFA. `FirebaseAppDelegate` конфигурирует Firebase только при наличии `GoogleService-Info.plist` в основном bundle и явно включает сбор Analytics. `FirebaseAnalyticsTracker` не вызывает SDK, если Firebase не сконфигурирован, поэтому приложение остаётся работоспособным без файла конфигурации.
+Основной target подключает зафиксированную версию `FirebaseAnalyticsCore` и `FirebaseCrashlytics` через Swift Package Manager. `FirebaseAppDelegate` конфигурирует Firebase только при наличии `GoogleService-Info.plist` в основном bundle и явно включает сбор Analytics; Crashlytics использует ту же конфигурацию. `FirebaseAnalyticsTracker` не вызывает SDK, если Firebase не сконфигурирован, поэтому приложение остаётся работоспособным без файла конфигурации. Финальная build phase Crashlytics загружает dSYM основного target для символикации отчётов о сбоях.
 
 `RootViewModel` передаёт в `AnalyticsTracking` события `workout_started`, `workout_paused`, `workout_resumed`, `workout_stopped`, `workout_completed` и `notification_permission_updated`. Событие старта содержит настройки сессии, а остальные события — номер текущего и общего раунда либо итоговый статус разрешения. Проектный слой не передаёт свой идентификатор пользователя, текстовые данные или идентификаторы сессии; Firebase Analytics при включённом сборе может автоматически собирать технические данные и идентификаторы своей установки.
 
