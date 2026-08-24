@@ -83,6 +83,15 @@ final class RootViewModelTests: XCTestCase {
         XCTAssertEqual(fixture.appSettingsOpener.openCallCount, 1)
     }
 
+    func testNotificationPermissionRequestTracksResult() async {
+        let fixture = Fixture()
+        fixture.notificationScheduler.currentPermission = .allowed
+
+        await fixture.viewModel.performNotificationPermissionCardAction()
+
+        XCTAssertEqual(fixture.analyticsTracker.events, [.notificationPermissionUpdated(.allowed)])
+    }
+
     // MARK: - Session lifecycle
 
     func testWarningPlaysOnceWhenThresholdIsCrossed() async throws {
@@ -118,6 +127,7 @@ final class RootViewModelTests: XCTestCase {
         XCTAssertNotNil(fixture.sessionRepository.value)
         XCTAssertTrue(fixture.signalPlayer.playRequests.isEmpty)
         XCTAssertEqual(fixture.notificationScheduler.scheduledStates.count, 1)
+        XCTAssertEqual(fixture.analyticsTracker.events, [.workoutStarted(.defaultValue)])
         let startedStates = await fixture.liveActivityController.startedStates
         XCTAssertEqual(startedStates.count, 1)
         XCTAssertTrue(fixture.idleTimerController.isDisabled)
@@ -140,6 +150,13 @@ final class RootViewModelTests: XCTestCase {
 
         XCTAssertNil(fixture.sessionRepository.value)
         XCTAssertTrue(fixture.signalPlayer.playRequests.isEmpty)
+        XCTAssertEqual(fixture.analyticsTracker.events.count, 2)
+        guard case .workoutStarted = fixture.analyticsTracker.events[0] else {
+            return XCTFail("Expected workout start event")
+        }
+        guard case .workoutStopped = fixture.analyticsTracker.events[1] else {
+            return XCTFail("Expected workout stop event")
+        }
         let endedSessionIDs = await fixture.liveActivityController.endedSessionIDs
         XCTAssertEqual(endedSessionIDs.count, 1)
         XCTAssertFalse(fixture.idleTimerController.isDisabled)
@@ -158,6 +175,22 @@ final class RootViewModelTests: XCTestCase {
         XCTAssertEqual(paused.phase, .rest)
         XCTAssertEqual(paused.currentRound, 1)
         XCTAssertEqual(paused.pausedRemaining, 4)
+        XCTAssertEqual(fixture.analyticsTracker.events, [.workoutPaused(paused)])
+    }
+
+    func testResumeTracksEvent() async throws {
+        let start = Date(timeIntervalSince1970: 1_000)
+        let running = try XCTUnwrap(SessionEngine().start(configuration: .defaultValue, at: start))
+        let paused = SessionEngine().pause(running, at: start.addingTimeInterval(20))
+        let fixture = Fixture(initialSession: paused, date: start.addingTimeInterval(30))
+
+        await fixture.viewModel.togglePause()
+
+        guard let resumed = fixture.viewModel.session else {
+            return XCTFail("Expected resumed session")
+        }
+        XCTAssertFalse(resumed.isPaused)
+        XCTAssertEqual(fixture.analyticsTracker.events, [.workoutResumed(resumed)])
     }
 
     func testPauseAfterExpiredFinalRoundCompletesSession() async throws {
@@ -171,6 +204,7 @@ final class RootViewModelTests: XCTestCase {
 
         XCTAssertNil(fixture.viewModel.session)
         XCTAssertTrue(fixture.signalPlayer.playRequests.isEmpty)
+        XCTAssertEqual(fixture.analyticsTracker.events, [.workoutCompleted(initial)])
         let endedSessionIDs = await fixture.liveActivityController.endedSessionIDs
         XCTAssertEqual(endedSessionIDs, [initial.id])
     }
@@ -225,5 +259,25 @@ final class RootViewModelTests: XCTestCase {
 
         XCTAssertTrue(fixture.signalPlayer.playRequests.isEmpty)
         await fixture.viewModel.stop()
+    }
+
+    // MARK: - Analytics payload
+
+    func testWorkoutStartAnalyticsPayloadContainsTimerConfiguration() {
+        let configuration = TimerConfiguration(
+            roundCount: 4,
+            roundDuration: 150,
+            restDuration: 75,
+            preparationDuration: 20,
+            roundWarning: .thirtySeconds
+        )
+        let event = AnalyticsEvent.workoutStarted(configuration)
+
+        XCTAssertEqual(event.firebaseName, "workout_started")
+        XCTAssertEqual(event.firebaseParameters["round_count"] as? Int, 4)
+        XCTAssertEqual(event.firebaseParameters["round_duration_seconds"] as? Int, 150)
+        XCTAssertEqual(event.firebaseParameters["rest_duration_seconds"] as? Int, 75)
+        XCTAssertEqual(event.firebaseParameters["preparation_duration_seconds"] as? Int, 20)
+        XCTAssertEqual(event.firebaseParameters["round_warning_seconds"] as? Int, 30)
     }
 }

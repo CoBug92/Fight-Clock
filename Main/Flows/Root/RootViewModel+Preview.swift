@@ -22,7 +22,7 @@ extension RootViewModel {
             sessionRepository: PreviewSessionRepository(session: session), notificationScheduler: PreviewNotificationScheduler(),
             signalPlayer: PreviewSignalPlayer(), liveActivityController: PreviewLiveActivityController(),
             idleTimerController: PreviewIdleTimerController(), appSettingsOpener: PreviewAppSettingsOpener(),
-            dateProvider: PreviewDateProvider(date: now)
+            dateProvider: PreviewDateProvider(date: now), analyticsTracker: PreviewAnalyticsTracker()
         )
     }
 }
@@ -118,4 +118,11 @@ private final class PreviewDateProvider: DateProviding, Sendable {
     // MARK: - Public methods
 
     func now() -> Date { date }
+}
+
+@MainActor
+private final class PreviewAnalyticsTracker: AnalyticsTracking {
+    // MARK: - Public methods
+
+    func track(_ event: AnalyticsEvent) {}
 }

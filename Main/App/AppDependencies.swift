@@ -11,7 +11,8 @@ struct AppDependencies {
             liveActivityController: LiveActivityController(),
             idleTimerController: IdleTimerController(),
             appSettingsOpener: AppSettingsOpener(),
-            dateProvider: SystemDateProvider()
+            dateProvider: SystemDateProvider(),
+            analyticsTracker: FirebaseAnalyticsTracker()
         )
     }
 }

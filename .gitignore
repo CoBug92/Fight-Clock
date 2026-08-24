@@ -1,9 +1,7 @@
 ## Build generated
 */Resources/Generated/
 build/
-DerivedData
-.DerivedData
-.DerivedDataDevice
+*DerivedData*
 
 ## Fastlane
 /scripts/*.ipa

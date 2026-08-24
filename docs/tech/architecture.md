@@ -51,7 +51,7 @@
 
 | Компонент | Ответственность |
 |---|---|
-| `RootViewModel` | Главный координатор UI-состояния, запуска, паузы, остановки, синхронизации, звуков, уведомлений и Live Activity. |
+| `RootViewModel` | Главный координатор UI-состояния, запуска, паузы, остановки, синхронизации, звуков, уведомлений, Live Activity и продуктовых событий. |
 | `SessionEngine` | Чистая доменная логика запуска, переходов между фазами, паузы, продолжения и расчёта остатка. |
 | `SessionBoundaryPlanner` | Построение будущих границ сессии для локальных уведомлений. |
 | `TimerConfiguration` | Валидируемый снимок настроек: раунды, длительности, предупреждение и выбранные звуки. |
@@ -59,6 +59,7 @@
 | `NotificationScheduler` | Запрос разрешений, планирование и отмена локальных уведомлений по будущим границам. |
 | `ForegroundSignalPlayer` | Воспроизведение foreground-сигналов и preview выбранных звуков через `AVAudioPlayer`. |
 | `LiveActivityController` | Создание, обновление и завершение ActivityKit Live Activity. |
+| `FirebaseAnalyticsTracker` | Отправляет в Firebase Analytics анонимные события жизненного цикла тренировки через проектный контракт `AnalyticsTracking`. |
 
 ## Поток сессии
 
@@ -128,6 +129,12 @@ Setup-экран не даёт пользователю ввести произ�
 Конфигурация, активная сессия и состояние раскрытия setup-карточек сохраняются в `SharedDefaults.store` через JSON-кодирование в UserDefaults. `SharedDefaults.store` использует App Group `group.ru.kostyuchenko.fightclock`, поэтому Live Activity intents могут читать и обновлять активную сессию из extension.
 
 При невалидной или нечитаемой сохранённой конфигурации используется `TimerConfiguration.defaultValue`. Завершённая сессия очищается, история тренировок в текущей версии не хранится.
+
+## Аналитика
+
+Основной target подключает зафиксированную версию `FirebaseAnalyticsCore` через Swift Package Manager — вариант Firebase Analytics без IDFA. `FirebaseAppDelegate` конфигурирует Firebase только при наличии `GoogleService-Info.plist` в основном bundle и явно включает сбор Analytics. `FirebaseAnalyticsTracker` не вызывает SDK, если Firebase не сконфигурирован, поэтому приложение остаётся работоспособным без файла конфигурации.
+
+`RootViewModel` передаёт в `AnalyticsTracking` события `workout_started`, `workout_paused`, `workout_resumed`, `workout_stopped`, `workout_completed` и `notification_permission_updated`. Событие старта содержит настройки сессии, а остальные события — номер текущего и общего раунда либо итоговый статус разрешения. Проектный слой не передаёт свой идентификатор пользователя, текстовые данные или идентификаторы сессии; Firebase Analytics при включённом сборе может автоматически собирать технические данные и идентификаторы своей установки.
 
 ## Уведомления
 

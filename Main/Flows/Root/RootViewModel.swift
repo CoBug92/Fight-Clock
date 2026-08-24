@@ -20,6 +20,7 @@ final class RootViewModel: ObservableObject {
     private let idleTimerController: IdleTimerControlling
     private let appSettingsOpener: AppSettingsOpening
     private let dateProvider: DateProviding
+    private let analyticsTracker: AnalyticsTracking
     private let engine = SessionEngine()
     private var timerTask: Task<Void, Never>?
     private var operationGeneration: Int = .zero
@@ -35,7 +36,8 @@ final class RootViewModel: ObservableObject {
         liveActivityController: LiveActivityControlling,
         idleTimerController: IdleTimerControlling,
         appSettingsOpener: AppSettingsOpening,
-        dateProvider: DateProviding
+        dateProvider: DateProviding,
+        analyticsTracker: AnalyticsTracking
     ) {
         self.configurationRepository = configurationRepository
         self.sessionRepository = sessionRepository
@@ -45,6 +47,7 @@ final class RootViewModel: ObservableObject {
         self.idleTimerController = idleTimerController
         self.appSettingsOpener = appSettingsOpener
         self.dateProvider = dateProvider
+        self.analyticsTracker = analyticsTracker
         configuration = configurationRepository.load()
         session = sessionRepository.load()
     }
@@ -128,6 +131,7 @@ final class RootViewModel: ObservableObject {
         switch notificationPermission {
         case .notDetermined:
             notificationPermission = await notificationScheduler.requestPermission()
+            analyticsTracker.track(.notificationPermissionUpdated(notificationPermission))
         case .allowed:
             break
         case .denied:
@@ -140,6 +144,7 @@ final class RootViewModel: ObservableObject {
         guard session == nil, let state = engine.start(configuration: configuration, at: now) else { return }
         let generation = beginOperation()
         apply(state, at: now)
+        analyticsTracker.track(.workoutStarted(state.configuration))
         if isSceneActive, state.phase == .round {
             signalPlayer.play(.roundStarted, configuration: state.configuration)
         }
@@ -172,6 +177,7 @@ final class RootViewModel: ObservableObject {
         let updated = resolved.isPaused ? engine.resume(resolved, at: now) : engine.pause(resolved, at: now)
         let generation = beginOperation()
         apply(updated, at: now)
+        analyticsTracker.track(updated.isPaused ? .workoutPaused(updated) : .workoutResumed(updated))
 
         if updated.isPaused {
             notificationScheduler.cancel(for: resolved)
@@ -198,6 +204,9 @@ final class RootViewModel: ObservableObject {
         session = nil
         remainingSeconds = .zero
         sessionRepository.clear()
+        if let stoppedSession {
+            analyticsTracker.track(.workoutStopped(stoppedSession))
+        }
         if let stoppedSession { notificationScheduler.cancel(for: stoppedSession) }
         idleTimerController.setDisabled(false)
         if let stoppedSession {
@@ -281,6 +290,7 @@ final class RootViewModel: ObservableObject {
         session = nil
         remainingSeconds = .zero
         sessionRepository.clear()
+        analyticsTracker.track(.workoutCompleted(state))
         notificationScheduler.cancel(for: state)
         idleTimerController.setDisabled(false)
         await liveActivityController.end(sessionID: state.id)

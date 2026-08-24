@@ -12,6 +12,7 @@ final class Fixture {
     let liveActivityController = LiveActivityControllerSpy()
     let idleTimerController = IdleTimerControllerSpy()
     let appSettingsOpener = AppSettingsOpenerSpy()
+    let analyticsTracker = AnalyticsTrackerSpy()
     let dateProvider: DateProviderFake
     let viewModel: RootViewModel
 
@@ -31,7 +32,8 @@ final class Fixture {
             liveActivityController: liveActivityController,
             idleTimerController: idleTimerController,
             appSettingsOpener: appSettingsOpener,
-            dateProvider: dateProvider
+            dateProvider: dateProvider,
+            analyticsTracker: analyticsTracker
         )
     }
 }
@@ -177,4 +179,17 @@ final class DateProviderFake: DateProviding, @unchecked Sendable {
     // MARK: - Public methods
 
     func now() -> Date { value }
+}
+
+@MainActor
+final class AnalyticsTrackerSpy: AnalyticsTracking {
+    // MARK: - Properties
+
+    private(set) var events: [AnalyticsEvent] = []
+
+    // MARK: - Public methods
+
+    func track(_ event: AnalyticsEvent) {
+        events.append(event)
+    }
 }

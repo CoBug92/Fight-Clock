@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct BoxingTimerApp: App {
+    @UIApplicationDelegateAdaptor(FirebaseAppDelegate.self) private var firebaseAppDelegate
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = AppDependencies().makeRootViewModel()
 
