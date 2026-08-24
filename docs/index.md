@@ -19,6 +19,7 @@
 | [Product Requirements Document](product/prd.md) | Функциональные и нефункциональные требования к приложению. |
 | [UX Flow](ux/flow.md) | Пользовательские состояния, переходы, ключевые экраны и ограничения UX. |
 | [Technical Architecture](tech/architecture.md) | Текущее устройство приложения, слои, поток данных и технические ограничения. |
+| [Firebase Analytics и Crashlytics](tech/firebase-observability.md) | Конфигурация, состав событий, DebugView, Crashlytics и dSYM. |
 | [Локальные скрипты и доставка](tech/scripts.md) | Локальная генерация проекта, SwiftGen/XcodeGen/Fastlane и границы доставки. |
 | [Support URL](site/support/index.html) | Двуязычная публичная страница поддержки для App Store. |
 | [Privacy Policy URL](site/privacy/index.html) | Двуязычная публичная политика приватности для App Store. |
@@ -37,6 +38,7 @@ docs/
 │   └── vision.md
 ├── tech/
 │   ├── architecture.md
+│   ├── firebase-observability.md
 │   └── scripts.md
 └── ux/
     └── flow.md
