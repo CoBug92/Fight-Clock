@@ -55,7 +55,7 @@ docs/
 - инфраструктура основного приложения: `Main/Infrastructure/Persistence`, `Main/Infrastructure/Notifications`, `Main/Infrastructure/Audio`, `Main/Infrastructure/System`;
 - Live Activity extension, клиент и intents: `LiveActivity/Flows`, `LiveActivity/Infrastructure/Client`, `LiveActivity/Infrastructure/AppIntents`, `LiveActivity/Model`;
 - ресурсы и локализации: `Main/Resources/Audio`, `Main/Resources/Localization`, `Main/Resources/Configuration`;
-- генерация проекта и доставка: `scripts/xcodegen`, `scripts/swiftgen`, `scripts/fastlane`, `scripts/generate.sh`.
+- генерация проекта и доставка: `Makefile`, `scripts/xcodegen`, `scripts/swiftgen`, `scripts/fastlane`.
 
 Корневой `AGENTS.md` в рабочей области отсутствует; применяются инструкции, переданные пользователем в задаче.
 

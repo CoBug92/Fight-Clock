@@ -19,6 +19,17 @@ GitHub Pages и App Store Connect не изменяются этим репоз�
 
 Каталог `scripts/` содержит локальные утилиты генерации проекта, вспомогательные обёртки над XcodeGen и SwiftGen, а также Fastlane-конфигурацию для сборки и доставки Fight Clock.
 
+Канонический интерфейс локальной разработки — корневой `Makefile`:
+
+```sh
+make generate
+make lint
+make test
+make build
+```
+
+`test` выбирает доступный iPhone Simulator автоматически; `CI_XCODE_DESTINATION` и `CI_BUILD_DESTINATION` позволяют явно задать destination для тестов и сборки соответственно.
+
 ## Структура
 
 ```text
@@ -31,6 +42,8 @@ scripts/
 ├── bootstrap.sh                   # установка зависимостей, генерация и открытие проекта
 ├── generate.sh                    # каноническая точка локальной генерации
 └── .env.example                   # шаблон локальных несекретных переменных
+
+Makefile                            # публичные команды generate, lint, test и build
 ```
 
 ## Локальное окружение
@@ -55,10 +68,10 @@ cp scripts/.env.example scripts/.env
 Каноническая точка локальной генерации:
 
 ```sh
-scripts/generate.sh
+make generate
 ```
 
-`scripts/generate.sh` проверяет наличие `scripts/.env`, экспортирует его в shell и затем запускает существующие обёртки над SwiftGen и XcodeGen.
+`make generate` вызывает `scripts/generate.sh`, который проверяет наличие `scripts/.env`, экспортирует его в shell и затем запускает существующие обёртки над SwiftGen и XcodeGen.
 
 Канонические XcodeGen-спеки:
 

@@ -38,7 +38,7 @@ brew install xcodegen swiftgen
 2. Сгенерируйте локализации и Xcode-проект:
 
    ```sh
-   scripts/generate.sh
+   make generate
    ```
 
 3. Откройте `BoxingTimer.xcodeproj` и запустите схему `Main` на iPhone или симуляторе iPhone с iOS 18+.
@@ -50,13 +50,12 @@ brew install xcodegen swiftgen
 После генерации проекта тесты можно запустить в Xcode (`Product` → `Test`) или из терминала:
 
 ```sh
-xcodebuild test \
-  -project BoxingTimer.xcodeproj \
-  -scheme Main \
-  -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max'
+make test
 ```
 
-Если такого симулятора нет, подставьте имя доступного iPhone из `xcrun simctl list devices available`.
+`make test` автоматически выбирает доступный iPhone Simulator. Для явного выбора задайте `CI_XCODE_DESTINATION`.
+
+Для остальных локальных операций используйте `make lint`, `make build`, `make sounds` и `make bootstrap`.
 
 ## Архитектура
 

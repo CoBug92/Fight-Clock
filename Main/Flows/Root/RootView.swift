@@ -13,11 +13,11 @@ struct RootView: View {
             Group {
                 if viewModel.session == nil {
                     NavigationStack {
-                        SetupView(viewModel: viewModel)
+                        SetupView(viewModel: viewModel.setupViewModel, soundSettingsViewModel: viewModel.soundSettingsViewModel)
                     }
                         .transition(.opacity.combined(with: .scale(.rootSetupTransitionScale)))
                 } else {
-                    ActiveTimerView(viewModel: viewModel)
+                    ActiveTimerView(viewModel: viewModel.activeTimerViewModel)
                         .transition(.opacity)
                 }
             }

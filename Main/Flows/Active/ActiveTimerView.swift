@@ -3,7 +3,7 @@ import SwiftUI
 struct ActiveTimerView: View {
     // MARK: - Observable properties
 
-    @ObservedObject var viewModel: RootViewModel
+    @ObservedObject var viewModel: ActiveTimerViewModel
     @State private var showsStopConfirmation = false
 
     // MARK: - Layout

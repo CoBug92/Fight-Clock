@@ -3,7 +3,7 @@ import SwiftUI
 struct SoundSettingsView: View {
     // MARK: - Observable properties
 
-    @ObservedObject var viewModel: RootViewModel
+    @ObservedObject var viewModel: SoundSettingsViewModel
     @State private var isRoundStartExpanded = true
     @State private var isRoundTransitionExpanded = true
     @State private var isWarningExpanded = true
@@ -52,9 +52,9 @@ struct SoundSettingsView: View {
 
     private var roundStartBinding: Binding<BundledTimerSound> {
         Binding(
-            get: { viewModel.roundStartSound },
+            get: { viewModel.soundConfiguration.roundStartSound },
             set: {
-                guard $0 != viewModel.roundStartSound else { return }
+                guard $0 != viewModel.soundConfiguration.roundStartSound else { return }
                 viewModel.update(roundStartSound: $0)
                 viewModel.preview($0)
             }
@@ -63,9 +63,9 @@ struct SoundSettingsView: View {
 
     private var roundTransitionBinding: Binding<BundledTimerSound> {
         Binding(
-            get: { viewModel.roundTransitionSound },
+            get: { viewModel.soundConfiguration.roundTransitionSound },
             set: {
-                guard $0 != viewModel.roundTransitionSound else { return }
+                guard $0 != viewModel.soundConfiguration.roundTransitionSound else { return }
                 viewModel.update(roundTransitionSound: $0)
                 viewModel.preview($0)
             }
@@ -74,9 +74,9 @@ struct SoundSettingsView: View {
 
     private var warningBinding: Binding<BundledTimerSound> {
         Binding(
-            get: { viewModel.warningSound },
+            get: { viewModel.soundConfiguration.warningSound },
             set: {
-                guard $0 != viewModel.warningSound else { return }
+                guard $0 != viewModel.soundConfiguration.warningSound else { return }
                 viewModel.update(warningSound: $0)
                 viewModel.preview($0)
             }
@@ -97,7 +97,7 @@ private extension CGFloat {
 #if DEBUG && targetEnvironment(simulator)
 #Preview {
     NavigationStack {
-        SoundSettingsView(viewModel: AppDependencies().makeRootViewModel())
+        SoundSettingsView(viewModel: AppDependencies().makeRootViewModel().soundSettingsViewModel)
     }
 }
 #endif

@@ -3,7 +3,8 @@ import SwiftUI
 struct SetupView: View {
     // MARK: - Observable properties
 
-    @ObservedObject var viewModel: RootViewModel
+    @ObservedObject var viewModel: SetupViewModel
+    @ObservedObject var soundSettingsViewModel: SoundSettingsViewModel
     @State private var pickerState: SetupPickerState
 
     // MARK: - Properties
@@ -13,10 +14,12 @@ struct SetupView: View {
     // MARK: - Init
 
     init(
-        viewModel: RootViewModel,
+        viewModel: SetupViewModel,
+        soundSettingsViewModel: SoundSettingsViewModel,
         pickerStateRepository: SetupPickerStateRepository = UserDefaultsSetupPickerStateRepository()
     ) {
         self.viewModel = viewModel
+        self.soundSettingsViewModel = soundSettingsViewModel
         self.pickerStateRepository = pickerStateRepository
         _pickerState = State(initialValue: pickerStateRepository.load())
     }
@@ -62,7 +65,7 @@ struct SetupView: View {
                         isExpanded: warningExpandedBinding
                     )
                     SoundSettingsLink(summary: soundSettingsSummary) {
-                        SoundSettingsView(viewModel: viewModel)
+                        SoundSettingsView(viewModel: soundSettingsViewModel)
                     }
                     StartSessionButton {
                         Task { await viewModel.start() }
@@ -178,9 +181,9 @@ struct SetupView: View {
 
     private var soundSettingsSummary: String {
         [
-            viewModel.roundStartSound.localizedTitle,
-            viewModel.roundTransitionSound.localizedTitle,
-            viewModel.warningSound.localizedTitle
+            soundSettingsViewModel.soundConfiguration.roundStartSound.localizedTitle,
+            soundSettingsViewModel.soundConfiguration.roundTransitionSound.localizedTitle,
+            soundSettingsViewModel.soundConfiguration.warningSound.localizedTitle
         ].joined(separator: TechnicalString.middleDotSeparator)
     }
 }
@@ -205,6 +208,7 @@ private extension Int {
 
 #if DEBUG && targetEnvironment(simulator)
 #Preview {
-    SetupView(viewModel: AppDependencies().makeRootViewModel())
+    let rootViewModel = AppDependencies().makeRootViewModel()
+    SetupView(viewModel: rootViewModel.setupViewModel, soundSettingsViewModel: rootViewModel.soundSettingsViewModel)
 }
 #endif

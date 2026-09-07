@@ -19,7 +19,7 @@
 - `Main/Infrastructure/Persistence/*`, `Main/Infrastructure/Notifications/*`, `Main/Infrastructure/Audio/*`, `Main/Infrastructure/System/*`;
 - `LiveActivity/Flows/*`, `LiveActivity/Infrastructure/Client/*`, `LiveActivity/Infrastructure/AppIntents/*`, `LiveActivity/Model/*`;
 - `Main/Resources/Configuration/*`, `Main/Resources/Localization/*`, `Main/Resources/Audio/*`;
-- `scripts/generate.sh`, `scripts/xcodegen/*`, `scripts/swiftgen/*`, `scripts/fastlane/*`.
+- `Makefile`, `scripts/generate.sh`, `scripts/xcodegen/*`, `scripts/swiftgen/*`, `scripts/fastlane/*`.
 
 Тесты использовались только как дополнительный сигнал контракта, без документирования отдельных test cases.
 
@@ -45,13 +45,18 @@
                               +----------------------+
 ```
 
-`AppDependencies` собирает production-зависимости для `RootViewModel`: репозитории UserDefaults, планировщик уведомлений, foreground-плеер, контроллер Live Activity, контроллер idle timer и системный поставщик даты.
+`AppDependencies` собирает единые production-зависимости в экранные модели и контроллеры. Конфигурация и активная сессия не копируются между экранами.
 
 ## Основные компоненты
 
 | Компонент | Ответственность |
 |---|---|
-| `RootViewModel` | Главный координатор UI-состояния, запуска, паузы, остановки, синхронизации, звуков, уведомлений, Live Activity и продуктовых событий. |
+| `RootViewModel` | Корневая композиция и маршрутизация между setup и активной сессией; передаёт смену scene phase контроллеру сессии. |
+| `TimerConfigurationController` | Единый владелец сохранённой редактируемой `TimerConfiguration` до запуска сессии. |
+| `SetupViewModel` | Редактирование настроек, разрешение уведомлений и запуск. |
+| `SoundSettingsViewModel` | Выбор и preview звуков через общую конфигурацию. |
+| `ActiveTimerViewModel` | Presentation-модель активного таймера и действия паузы/остановки. |
+| `WorkoutSessionController` | Единственный владелец активной сессии, тикера, persistence, уведомлений, Live Activity, idle timer, сигналов и аналитики. |
 | `SessionEngine` | Чистая доменная логика запуска, переходов между фазами, паузы, продолжения и расчёта остатка. |
 | `SessionBoundaryPlanner` | Построение будущих границ сессии для локальных уведомлений. |
 | `TimerConfiguration` | Валидируемый снимок настроек: раунды, длительности, предупреждение и выбранные звуки. |
@@ -67,25 +72,27 @@
 ```mermaid
 sequenceDiagram
     participant UI as SetupView/RootView
-    participant VM as RootViewModel
+    participant Setup as SetupViewModel
+    participant Session as WorkoutSessionController
     participant Engine as SessionEngine
     participant Store as UserDefaults repositories
     participant Notifications as NotificationScheduler
     participant Activity as LiveActivityController
 
-    UI->>VM: start()
-    VM->>Engine: start(configuration, now)
-    Engine-->>VM: SessionState
-    VM->>Store: save(SessionState)
-    VM->>Notifications: schedule(for: state)
-    VM->>Activity: start(for: state)
-    VM->>VM: start ticker
+    UI->>Setup: start()
+    Setup->>Session: start(configuration)
+    Session->>Engine: start(configuration, now)
+    Engine-->>Session: SessionState
+    Session->>Store: save(SessionState)
+    Session->>Notifications: schedule(for: state)
+    Session->>Activity: start(for: state)
+    Session->>Session: start ticker
     loop every ~200 ms while active session exists
-        VM->>Engine: resolve(state, now)
-        Engine-->>VM: resolved state + signals
-        VM->>Store: save or clear
-        VM->>Notifications: reschedule when boundary signals occurred
-        VM->>Activity: update or end
+        Session->>Engine: resolve(state, now)
+        Engine-->>Session: resolved state + signals
+        Session->>Store: save or clear
+        Session->>Notifications: reschedule when boundary signals occurred
+        Session->>Activity: update or end
     end
 ```
 
@@ -110,7 +117,7 @@ sequenceDiagram
 - подготовка: `0...300` секунд;
 - все длительности кратны 5 секундам.
 
-Пока сессия активна, `RootViewModel.update(...)` не меняет конфигурацию.
+Пока сессия активна, `SetupViewModel` не меняет конфигурацию. Sound settings и setup используют один `TimerConfigurationController`, поэтому не получают расходящихся копий настроек.
 
 Setup-экран не даёт пользователю ввести произвольное число с клавиатуры: длительности выбираются через `DurationPicker`, где минуты и секунды строятся из допустимого диапазона, а секунды идут с шагом 5.
 
@@ -135,7 +142,7 @@ Setup-экран не даёт пользователю ввести произ�
 
 Основной target подключает зафиксированную версию `FirebaseAnalyticsCore` и `FirebaseCrashlytics` через Swift Package Manager. `FirebaseAppDelegate` конфигурирует Firebase только при наличии `GoogleService-Info.plist` в основном bundle и явно включает сбор Analytics; Crashlytics использует ту же конфигурацию. `FirebaseAnalyticsTracker` не вызывает SDK, если Firebase не сконфигурирован, поэтому приложение остаётся работоспособным без файла конфигурации. Финальная build phase Crashlytics загружает dSYM основного target для символикации отчётов о сбоях.
 
-`RootViewModel` передаёт в `AnalyticsTracking` события `workout_started`, `workout_paused`, `workout_resumed`, `workout_stopped`, `workout_completed` и `notification_permission_updated`. Событие старта содержит настройки сессии, а остальные события — номер текущего и общего раунда либо итоговый статус разрешения. Проектный слой не передаёт свой идентификатор пользователя, текстовые данные или идентификаторы сессии; Firebase Analytics при включённом сборе может автоматически собирать технические данные и идентификаторы своей установки.
+`WorkoutSessionController` передаёт в `AnalyticsTracking` события жизненного цикла тренировки; `SetupViewModel` передаёт `notification_permission_updated`. Событие старта содержит настройки сессии, а остальные события — номер текущего и общего раунда либо итоговый статус разрешения. Проектный слой не передаёт свой идентификатор пользователя, текстовые данные или идентификаторы сессии; Firebase Analytics при включённом сборе может автоматически собирать технические данные и идентификаторы своей установки.
 
 ## Уведомления
 

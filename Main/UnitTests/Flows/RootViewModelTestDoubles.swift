@@ -24,18 +24,68 @@ final class Fixture {
     ) {
         dateProvider = DateProviderFake(value: date)
         sessionRepository.value = initialSession
-        viewModel = RootViewModel(
-            configurationRepository: configurationRepository,
+        let configurationController = TimerConfigurationController(repository: configurationRepository)
+        let sessionController = WorkoutSessionController(
             sessionRepository: sessionRepository,
             notificationScheduler: notificationScheduler,
             signalPlayer: signalPlayer,
             liveActivityController: liveActivityController,
             idleTimerController: idleTimerController,
-            appSettingsOpener: appSettingsOpener,
             dateProvider: dateProvider,
             analyticsTracker: analyticsTracker
         )
+        let setupViewModel = SetupViewModel(
+            configurationController: configurationController,
+            sessionController: sessionController,
+            notificationScheduler: notificationScheduler,
+            appSettingsOpener: appSettingsOpener,
+            analyticsTracker: analyticsTracker
+        )
+        viewModel = RootViewModel(
+            sessionController: sessionController,
+            setupViewModel: setupViewModel,
+            soundSettingsViewModel: SoundSettingsViewModel(configurationController: configurationController, signalPlayer: signalPlayer),
+            activeTimerViewModel: ActiveTimerViewModel(sessionController: sessionController)
+        )
     }
+}
+
+@MainActor
+extension RootViewModel {
+    func update(
+        roundCount: Int? = nil,
+        roundDuration: Int? = nil,
+        restDuration: Int? = nil,
+        preparationDuration: Int? = nil,
+        roundWarning: RoundWarning? = nil,
+        roundStartSound: BundledTimerSound? = nil,
+        roundTransitionSound: BundledTimerSound? = nil,
+        warningSound: BundledTimerSound? = nil
+    ) {
+        if roundCount != nil || roundDuration != nil || restDuration != nil || preparationDuration != nil || roundWarning != nil {
+            setupViewModel.update(
+                roundCount: roundCount,
+                roundDuration: roundDuration,
+                restDuration: restDuration,
+                preparationDuration: preparationDuration,
+                roundWarning: roundWarning
+            )
+        }
+        if roundStartSound != nil || roundTransitionSound != nil || warningSound != nil {
+            soundSettingsViewModel.update(
+                roundStartSound: roundStartSound,
+                roundTransitionSound: roundTransitionSound,
+                warningSound: warningSound
+            )
+        }
+    }
+
+    func preview(_ sound: BundledTimerSound) { soundSettingsViewModel.preview(sound) }
+    var notificationPermissionCard: NotificationPermissionCardViewData? { setupViewModel.notificationPermissionCard }
+    func performNotificationPermissionCardAction() async { await setupViewModel.performNotificationPermissionCardAction() }
+    func start() async { await setupViewModel.start() }
+    func togglePause() async { await activeTimerViewModel.togglePause() }
+    func stop() async { await activeTimerViewModel.stop() }
 }
 
 @MainActor

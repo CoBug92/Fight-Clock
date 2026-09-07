@@ -1,14 +1,14 @@
 import Foundation
 
 @MainActor
-extension RootViewModel {
+extension ActiveTimerViewModel {
     // MARK: - Preview
 
     static func preview(
         phase: SessionPhase,
         isPaused: Bool = false,
         remainingSeconds: Int
-    ) -> RootViewModel {
+    ) -> ActiveTimerViewModel {
         let configuration = TimerConfiguration(roundCount: 3, roundDuration: 180, restDuration: 60, preparationDuration: 30)
         let now = Date()
         let session = SessionState(
@@ -17,13 +17,13 @@ extension RootViewModel {
             pausedRemaining: isPaused ? TimeInterval(remainingSeconds) : nil, hasPlayedRoundWarning: false, updatedAt: now
         )
 
-        return RootViewModel(
-            configurationRepository: PreviewConfigurationRepository(configuration: configuration),
+        let sessionController = WorkoutSessionController(
             sessionRepository: PreviewSessionRepository(session: session), notificationScheduler: PreviewNotificationScheduler(),
             signalPlayer: PreviewSignalPlayer(), liveActivityController: PreviewLiveActivityController(),
-            idleTimerController: PreviewIdleTimerController(), appSettingsOpener: PreviewAppSettingsOpener(),
-            dateProvider: PreviewDateProvider(date: now), analyticsTracker: PreviewAnalyticsTracker()
+            idleTimerController: PreviewIdleTimerController(), dateProvider: PreviewDateProvider(date: now),
+            analyticsTracker: PreviewAnalyticsTracker()
         )
+        return ActiveTimerViewModel(sessionController: sessionController)
     }
 }
 
