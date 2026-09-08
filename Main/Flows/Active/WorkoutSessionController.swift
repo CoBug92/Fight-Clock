@@ -40,7 +40,11 @@ final class WorkoutSessionController: ObservableObject {
         self.idleTimerController = idleTimerController
         self.dateProvider = dateProvider
         self.analyticsTracker = analyticsTracker
-        session = sessionRepository.load()
+        let storedSession = sessionRepository.load()
+        session = storedSession
+        if let storedSession {
+            remainingSeconds = engine.remainingSeconds(for: storedSession, at: dateProvider.now())
+        }
     }
 
     deinit { timerTask?.cancel() }
@@ -88,6 +92,11 @@ final class WorkoutSessionController: ObservableObject {
         let updated = resolved.isPaused ? engine.resume(resolved, at: now) : engine.pause(resolved, at: now)
         let generation = beginOperation()
         apply(updated, at: now)
+        if updated.isPaused {
+            stopTicker()
+        } else {
+            startTickerIfNeeded()
+        }
         analyticsTracker.track(updated.isPaused ? .workoutPaused(updated) : .workoutResumed(updated))
         if updated.isPaused {
             notificationScheduler.cancel(for: resolved)
@@ -108,8 +117,7 @@ final class WorkoutSessionController: ObservableObject {
     func stop() async {
         let stoppedSession = session
         _ = beginOperation()
-        timerTask?.cancel()
-        timerTask = nil
+        stopTicker()
         session = nil
         remainingSeconds = .zero
         sessionRepository.clear()
@@ -122,6 +130,7 @@ final class WorkoutSessionController: ObservableObject {
     func setSceneActive(_ isActive: Bool) async {
         isSceneActive = isActive
         guard isActive else {
+            stopTicker()
             if session != nil { idleTimerController.setDisabled(false) }
             return
         }
@@ -177,8 +186,7 @@ final class WorkoutSessionController: ObservableObject {
     private func complete(playSignal: Bool, state: SessionState) async {
         _ = beginOperation()
         if playSignal, isSceneActive { signalPlayer.play(.workoutCompleted, configuration: state.configuration) }
-        timerTask?.cancel()
-        timerTask = nil
+        stopTicker()
         session = nil
         remainingSeconds = .zero
         sessionRepository.clear()
@@ -200,7 +208,7 @@ final class WorkoutSessionController: ObservableObject {
     private func isCurrent(_ generation: Int, sessionID: UUID) -> Bool { operationGeneration == generation && session?.id == sessionID }
 
     private func startTickerIfNeeded() {
-        guard session != nil, timerTask == nil else { return }
+        guard isSceneActive, session?.isPaused == false, timerTask == nil else { return }
         timerTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: .milliseconds(.workoutSessionTickIntervalMilliseconds))
@@ -209,6 +217,11 @@ final class WorkoutSessionController: ObservableObject {
                 if self.session == nil { return }
             }
         }
+    }
+
+    private func stopTicker() {
+        timerTask?.cancel()
+        timerTask = nil
     }
 
     private func signalToPlay(from signals: [SessionSignal], isRecentBoundary: Bool) -> SessionSignal? {

@@ -14,6 +14,11 @@ final class Fixture {
     let appSettingsOpener = AppSettingsOpenerSpy()
     let analyticsTracker = AnalyticsTrackerSpy()
     let dateProvider: DateProviderFake
+    let configurationController: TimerConfigurationController
+    let sessionController: WorkoutSessionController
+    let setupViewModel: SetupViewModel
+    let soundSettingsViewModel: SoundSettingsViewModel
+    let activeTimerViewModel: ActiveTimerViewModel
     let viewModel: RootViewModel
 
     // MARK: - Init
@@ -24,8 +29,8 @@ final class Fixture {
     ) {
         dateProvider = DateProviderFake(value: date)
         sessionRepository.value = initialSession
-        let configurationController = TimerConfigurationController(repository: configurationRepository)
-        let sessionController = WorkoutSessionController(
+        configurationController = TimerConfigurationController(repository: configurationRepository)
+        sessionController = WorkoutSessionController(
             sessionRepository: sessionRepository,
             notificationScheduler: notificationScheduler,
             signalPlayer: signalPlayer,
@@ -34,18 +39,23 @@ final class Fixture {
             dateProvider: dateProvider,
             analyticsTracker: analyticsTracker
         )
-        let setupViewModel = SetupViewModel(
+        setupViewModel = SetupViewModel(
             configurationController: configurationController,
             sessionController: sessionController,
             notificationScheduler: notificationScheduler,
             appSettingsOpener: appSettingsOpener,
             analyticsTracker: analyticsTracker
         )
+        soundSettingsViewModel = SoundSettingsViewModel(
+            configurationController: configurationController,
+            signalPlayer: signalPlayer
+        )
+        activeTimerViewModel = ActiveTimerViewModel(sessionController: sessionController)
         viewModel = RootViewModel(
             sessionController: sessionController,
             setupViewModel: setupViewModel,
-            soundSettingsViewModel: SoundSettingsViewModel(configurationController: configurationController, signalPlayer: signalPlayer),
-            activeTimerViewModel: ActiveTimerViewModel(sessionController: sessionController)
+            soundSettingsViewModel: soundSettingsViewModel,
+            activeTimerViewModel: activeTimerViewModel
         )
     }
 }
@@ -116,11 +126,15 @@ final class SessionRepositoryFake: SessionRepository, @unchecked Sendable {
     // MARK: - Properties
 
     var value: SessionState?
+    private(set) var saveCallCount: Int = .zero
 
     // MARK: - Public methods
 
     func load() -> SessionState? { value }
-    func save(_ state: SessionState) { value = state }
+    func save(_ state: SessionState) {
+        value = state
+        saveCallCount += 1
+    }
     func clear() { value = nil }
 }
 

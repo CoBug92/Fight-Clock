@@ -6,6 +6,7 @@ struct AppDependencies {
         let configurationController = TimerConfigurationController(repository: UserDefaultsConfigurationRepository())
         let notificationScheduler = NotificationScheduler()
         let signalPlayer = ForegroundSignalPlayer()
+        let analyticsTracker = FirebaseAnalyticsTracker()
         let sessionController = WorkoutSessionController(
             sessionRepository: UserDefaultsSessionRepository(),
             notificationScheduler: notificationScheduler,
@@ -13,14 +14,14 @@ struct AppDependencies {
             liveActivityController: LiveActivityController(),
             idleTimerController: IdleTimerController(),
             dateProvider: SystemDateProvider(),
-            analyticsTracker: FirebaseAnalyticsTracker()
+            analyticsTracker: analyticsTracker
         )
         let setupViewModel = SetupViewModel(
             configurationController: configurationController,
             sessionController: sessionController,
             notificationScheduler: notificationScheduler,
             appSettingsOpener: AppSettingsOpener(),
-            analyticsTracker: FirebaseAnalyticsTracker()
+            analyticsTracker: analyticsTracker
         )
         return RootViewModel(
             sessionController: sessionController,

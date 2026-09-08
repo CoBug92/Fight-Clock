@@ -17,6 +17,7 @@
 | [README](../README.md) | Короткая входная точка: назначение, запуск, требования и ключевые ссылки. |
 | [Product Vision](product/vision.md) | Проблема, целевой пользователь, границы MVP и уровень подтверждения гипотез. |
 | [Product Requirements Document](product/prd.md) | Функциональные и нефункциональные требования к приложению. |
+| [План продуктового пилота](product/pilot-plan-2026-09-07.md) | Протокол трёх реальных тренировок, наблюдения и критерии решения. |
 | [UX Flow](ux/flow.md) | Пользовательские состояния, переходы, ключевые экраны и ограничения UX. |
 | [Technical Architecture](tech/architecture.md) | Текущее устройство приложения, слои, поток данных и технические ограничения. |
 | [Firebase Analytics и Crashlytics](tech/firebase-observability.md) | Конфигурация, состав событий, DebugView, Crashlytics и dSYM. |
@@ -35,6 +36,7 @@ docs/
 │   └── triple-duration-picker-2026-08-19.md
 ├── product/
 │   ├── prd.md
+│   ├── pilot-plan-2026-09-07.md
 │   └── vision.md
 ├── tech/
 │   ├── architecture.md

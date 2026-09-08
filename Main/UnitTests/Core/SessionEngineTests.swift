@@ -74,6 +74,23 @@ final class SessionEngineTests: XCTestCase {
         XCTAssertEqual(resolution.signals, [.restStarted, .roundStarted, .restStarted, .roundStarted])
     }
 
+    func testMaximumWorkoutCompletesAtExactAbsoluteBoundaryWithoutDrift() throws {
+        let configuration = TimerConfiguration(
+            roundCount: 15,
+            roundDuration: 900,
+            restDuration: 300,
+            preparationDuration: 300,
+            roundWarning: .thirtySeconds
+        )
+        let state = try XCTUnwrap(engine.start(configuration: configuration, at: start))
+
+        let resolution = engine.resolve(state, at: start.addingTimeInterval(18_000))
+
+        XCTAssertNil(resolution.state)
+        XCTAssertEqual(resolution.signals.count, 45)
+        XCTAssertEqual(resolution.signals.last, .workoutCompleted)
+    }
+
     func testPauseAndResumePreserveRemainingTimeAndAreIdempotent() throws {
         let state = try XCTUnwrap(engine.start(configuration: configuration(), at: start))
         let pauseDate = start.addingTimeInterval(3.25)

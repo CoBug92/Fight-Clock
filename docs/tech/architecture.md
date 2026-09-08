@@ -86,8 +86,8 @@ sequenceDiagram
     Session->>Store: save(SessionState)
     Session->>Notifications: schedule(for: state)
     Session->>Activity: start(for: state)
-    Session->>Session: start ticker
-    loop every ~200 ms while active session exists
+    Session->>Session: start ticker when scene is active and session is running
+    loop every ~200 ms while scene is active and session is running
         Session->>Engine: resolve(state, now)
         Engine-->>Session: resolved state + signals
         Session->>Store: save or clear
@@ -97,6 +97,9 @@ sequenceDiagram
 ```
 
 Состояние таймера не выводится из количества UI-тиков. Для running-фазы источником истины является `phaseEndDate`; для паузы — `pausedRemaining`.
+Тикер останавливается на паузе и при переходе приложения в неактивное состояние. При возвращении в foreground контроллер сначала
+пересчитывает сессию по абсолютной границе, а затем возобновляет UI-тикер. Фоновые границы обслуживаются заранее запланированными
+системными уведомлениями, а не продолжающим работать UI-циклом.
 
 ## Конфигурация и валидация
 
@@ -123,7 +126,7 @@ Setup-экран не даёт пользователю ввести произ�
 
 ## Переходы и сигналы
 
-`SessionEngine.resolve(_:at:)` последовательно догоняет состояние до текущего времени. Если приложение пропустило несколько границ, engine может вернуть несколько сигналов, но foreground-воспроизведение в `RootViewModel` выбирает только релевантный сигнал рядом с недавней границей и не проигрывает старые переходы задним числом.
+`SessionEngine.resolve(_:at:)` последовательно догоняет состояние до текущего времени. Если приложение пропустило несколько границ, engine может вернуть несколько сигналов, но foreground-воспроизведение в `WorkoutSessionController` выбирает только релевантный сигнал рядом с недавней границей и не проигрывает старые переходы задним числом.
 
 Предупреждение конца раунда создаётся только когда:
 
