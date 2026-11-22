@@ -6,5 +6,4 @@ team_id(ENV.fetch("TEAM_ID"))
 readonly(ENV["MATCH_READONLY"] != "false")
 app_identifier([
   ENV.fetch("BUNDLE_ID"),
-  "#{ENV.fetch('BUNDLE_ID')}.liveactivity"
 ])
