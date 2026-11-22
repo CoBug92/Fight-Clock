@@ -1,5 +1,14 @@
-import ActivityKit
 import Foundation
+
+#if targetEnvironment(macCatalyst)
+struct LiveActivityController: LiveActivityControlling {
+    func start(for state: SessionState) async {}
+    func update(for state: SessionState) async {}
+    func end() async {}
+    func end(sessionID: UUID) async {}
+}
+#else
+import ActivityKit
 
 final class LiveActivityController: LiveActivityControlling {
     // MARK: - Public methods
@@ -57,3 +66,4 @@ final class LiveActivityController: LiveActivityControlling {
         )
     }
 }
+#endif

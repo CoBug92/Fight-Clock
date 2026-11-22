@@ -5,6 +5,7 @@ struct NotificationPermissionCard: View {
 
     let viewData: NotificationPermissionCardViewData
     let onAction: () -> Void
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     // MARK: - Layout
 
@@ -17,17 +18,26 @@ struct NotificationPermissionCard: View {
                 cardContent
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(Localizations.Permission.title)
+            .accessibilityValue(viewData.explanation)
+            .accessibilityHint(Localizations.Accessibility.opensSettings)
         }
     }
 
     private var cardContent: some View {
-        HStack(
+        let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(
+            alignment: .leading,
+            spacing: Margin.x4
+        )) : AnyLayout(HStackLayout(
             alignment: .top,
             spacing: Margin.x8
-        ) {
+        ))
+
+        return layout {
             Image(systemName: SFSymbol.bellBadgeFill)
                 .font(.title2)
-                .foregroundStyle(.orange)
+                .dynamicTypeSize(.large)
+                .foregroundStyle(Color(.Text.accentForeground))
                 .frame(
                     width: .notificationPermissionIconSize,
                     height: .notificationPermissionIconSize
@@ -36,6 +46,7 @@ struct NotificationPermissionCard: View {
                     .orange.opacity(.notificationPermissionIconOpacity),
                     in: Circle()
                 )
+                .accessibilityHidden(true)
 
             VStack(
                 alignment: .leading,
@@ -45,14 +56,18 @@ struct NotificationPermissionCard: View {
                     .font(.headline)
                 Text(viewData.explanation)
                     .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color(.Text.secondaryForeground))
                 if case let .button(title) = viewData.action {
-                    Button(
-                        title,
-                        action: onAction
-                    )
+                    Button(action: onAction) {
+                        Text(title)
+                            .fixedSize(
+                                horizontal: false,
+                                vertical: true
+                            )
+                            .frame(minHeight: .notificationPermissionTouchHeight)
+                    }
                     .buttonStyle(.bordered)
-                    .tint(.orange)
+                    .tint(Color(.Text.accentForeground))
                 }
             }
             .frame(
@@ -69,6 +84,7 @@ struct NotificationPermissionCard: View {
             Color(.Surface.cardBackground),
             in: RoundedRectangle(cornerRadius: .notificationPermissionCardCornerRadius)
         )
+        .contentShape(RoundedRectangle(cornerRadius: .notificationPermissionCardCornerRadius))
         .overlay {
             RoundedRectangle(cornerRadius: .notificationPermissionCardCornerRadius)
                 .stroke(
@@ -85,6 +101,7 @@ private extension CGFloat {
     static let notificationPermissionIconSize: CGFloat = 36
     static let notificationPermissionCardCornerRadius: CGFloat = 18
     static let notificationPermissionBorderWidth: CGFloat = 1
+    static let notificationPermissionTouchHeight: CGFloat = 44
 }
 
 private extension Double {

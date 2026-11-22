@@ -15,6 +15,7 @@ struct AppLaunchOverlayView: View {
     // MARK: - Observable properties
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var startedAt = ContinuousClock.now
 
     // MARK: - Layout
@@ -61,7 +62,7 @@ struct AppLaunchOverlayView: View {
     private func dial(elapsed: Double, progress: Double) -> some View {
         ZStack {
             Circle()
-                .fill(.ultraThinMaterial)
+                .fill(reduceTransparency ? AnyShapeStyle(.background) : AnyShapeStyle(.ultraThinMaterial))
                 .overlay {
                     Circle().strokeBorder(.primary.opacity(.launchDialBorderOpacity))
                 }

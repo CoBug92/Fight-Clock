@@ -12,6 +12,8 @@ struct LiveActivityPhaseBadgeView: View {
         Label {
             Text(title)
                 .font(.caption.weight(.semibold))
+                .lineLimit(2)
+                .minimumScaleFactor(.liveActivityBadgeMinimumScale)
         } icon: {
             Image(
                 systemName: LiveActivityIcon.systemName(
@@ -34,6 +36,9 @@ struct LiveActivityPhaseBadgeView: View {
             .white.opacity(.liveActivityBadgeOpacity),
             in: Capsule()
         )
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(LiveActivityIcon.accessibilityLabel(for: state, isStale: isStale))
     }
 
     // MARK: - Computed properties
@@ -42,11 +47,7 @@ struct LiveActivityPhaseBadgeView: View {
         if isStale { return Localizations.Activity.staleShort }
         if state.isPaused { return Localizations.Activity.paused }
 
-        switch state.phase {
-        case .preparation: return Localizations.Activity.preparation
-        case .round: return Localizations.Activity.round
-        case .rest: return Localizations.Activity.rest
-        }
+        return LiveActivityIcon.phaseTitle(for: state.phase)
     }
 }
 
@@ -54,4 +55,8 @@ struct LiveActivityPhaseBadgeView: View {
 
 private extension Double {
     static let liveActivityBadgeOpacity = 0.18
+}
+
+private extension CGFloat {
+    static let liveActivityBadgeMinimumScale: CGFloat = 0.65
 }

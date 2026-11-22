@@ -12,15 +12,26 @@ struct LiveActivityCountdownView: View {
     var body: some View {
         if isStale {
             Text(Localizations.Activity.staleShort)
-        } else if state.isPaused {
-            Text(formattedTime(seconds: state.pausedRemaining ?? .zero))
-        } else if let endDate = state.phaseEndDate {
+                .accessibilityHidden(true)
+        } else if !state.isPaused, let endDate = state.phaseEndDate {
+            let now = Date()
+            let interval = now...max(now, endDate)
             Text(
-                timerInterval: Date()...endDate,
-                countsDown: true
+                timerInterval: interval,
+                countsDown: true,
+                showsHours: false
             )
+            .accessibilityLabel(Localizations.Accessibility.remainingTime)
+            .accessibilityValue(Text(
+                timerInterval: interval,
+                countsDown: true,
+                showsHours: false
+            ))
         } else {
-            Text(formattedTime(seconds: .zero))
+            let seconds = state.pausedRemaining ?? .zero
+            Text(formattedTime(seconds: seconds))
+                .accessibilityLabel(Localizations.Accessibility.remainingTime)
+                .accessibilityValue(SpokenDuration.format(seconds))
         }
     }
 

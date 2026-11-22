@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct SetupView: View {
     // MARK: - Observable properties
@@ -9,6 +10,7 @@ struct SetupView: View {
 
     // MARK: - Properties
 
+    private let didCompleteWorkout: Bool
     private let pickerStateRepository: SetupPickerStateRepository
 
     // MARK: - Init
@@ -16,10 +18,12 @@ struct SetupView: View {
     init(
         viewModel: SetupViewModel,
         soundSettingsViewModel: SoundSettingsViewModel,
+        didCompleteWorkout: Bool = false,
         pickerStateRepository: SetupPickerStateRepository = UserDefaultsSetupPickerStateRepository()
     ) {
         self.viewModel = viewModel
         self.soundSettingsViewModel = soundSettingsViewModel
+        self.didCompleteWorkout = didCompleteWorkout
         self.pickerStateRepository = pickerStateRepository
         _pickerState = State(initialValue: pickerStateRepository.load())
     }
@@ -28,9 +32,22 @@ struct SetupView: View {
 
     var body: some View {
         GeometryReader { proxy in
+            let isNarrowPadWindow = UIDevice.current.userInterfaceIdiom == .pad && proxy.size.width < .setupContentMaximumWidth
+
             ScrollView {
                 VStack(spacing: Margin.x10) {
                     SetupHeaderView()
+                    if didCompleteWorkout {
+                        Label(
+                            Localizations.Notification.complete,
+                            systemImage: SFSymbol.checkmarkCircleFill
+                        )
+                        .font(.headline)
+                        .frame(
+                            maxWidth: .infinity,
+                            alignment: .leading
+                        )
+                    }
                     if let notificationPermissionCard = viewModel.notificationPermissionCard {
                         NotificationPermissionCard(
                             viewData: notificationPermissionCard
@@ -72,7 +89,6 @@ struct SetupView: View {
                     }
                 }
                 .frame(maxWidth: .setupContentMaximumWidth)
-                .frame(minHeight: proxy.size.height)
                 .padding(
                     .horizontal,
                     .setupContentHorizontalPadding
@@ -81,7 +97,8 @@ struct SetupView: View {
                     .vertical,
                     Margin.x10
                 )
-                .frame(maxWidth: .infinity)
+                .padding(.top, isNarrowPadWindow ? Margin.x6 : .zero)
+                .frame(maxWidth: .infinity, minHeight: proxy.size.height, alignment: .top)
             }
             .background(background)
         }

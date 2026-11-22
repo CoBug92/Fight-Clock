@@ -5,6 +5,7 @@ struct TimerRoundLabel: View {
 
     let currentRound: Int
     let roundCount: Int
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     // MARK: - Layout
 
@@ -16,7 +17,20 @@ struct TimerRoundLabel: View {
             )
         )
             .font(.title2.bold())
+            .lineLimit(dynamicTypeSize.isAccessibilitySize ? 1 : nil)
+            .minimumScaleFactor(.timerRoundLabelMinimumScale)
+            .fixedSize(
+                horizontal: false,
+                vertical: true
+            )
+            .accessibilityLabel(Localizations.Accessibility.spokenRoundProgress(currentRound, roundCount))
     }
+}
+
+// MARK: - Constants
+
+private extension CGFloat {
+    static let timerRoundLabelMinimumScale: CGFloat = 0.7
 }
 
 // MARK: - Preview

@@ -7,6 +7,7 @@ struct LiveActivityDynamicIsland {
 
     let state: BoxingTimerActivityAttributes.ContentState
     let isStale: Bool
+    @ScaledMetric(relativeTo: .title) private var countdownFontSize = CGFloat.liveActivityDynamicIslandFontSize
 
     // MARK: - Layout
 
@@ -28,41 +29,36 @@ struct LiveActivityDynamicIsland {
                 )
                 .font(
                     .system(
-                        size: .liveActivityDynamicIslandFontSize,
+                        size: min(countdownFontSize, .liveActivityDynamicIslandMaximumFontSize),
                         weight: .heavy,
                         design: .rounded
                     )
                     .monospacedDigit()
                 )
+                .lineLimit(1)
+                .minimumScaleFactor(.liveActivityCountdownMinimumScale)
                 .frame(
                     maxWidth: .infinity,
                     alignment: .leading
                 )
             }
         } compactLeading: {
-            Image(
-                systemName: LiveActivityIcon.systemName(
-                    for: state,
-                    isStale: isStale
-                )
-            )
+            phaseIcon
         } compactTrailing: {
             if isStale {
                 Image(systemName: SFSymbol.compactTimerWarning)
+                    .accessibilityHidden(true)
             } else {
                 LiveActivityCountdownView(
                     state: state,
                     isStale: false
                 )
                 .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(.liveActivityCountdownMinimumScale)
             }
         } minimal: {
-            Image(
-                systemName: LiveActivityIcon.systemName(
-                    for: state,
-                    isStale: isStale
-                )
-            )
+            phaseIcon
         }
         .keylineTint(
             LiveActivityPalette(
@@ -71,10 +67,22 @@ struct LiveActivityDynamicIsland {
             ).accent
         )
     }
+
+    private var phaseIcon: some View {
+        Image(
+            systemName: LiveActivityIcon.systemName(
+                for: state,
+                isStale: isStale
+            )
+        )
+        .accessibilityLabel(LiveActivityIcon.accessibilityLabel(for: state, isStale: isStale))
+    }
 }
 
 // MARK: - Constants
 
 private extension CGFloat {
     static let liveActivityDynamicIslandFontSize: CGFloat = 34
+    static let liveActivityDynamicIslandMaximumFontSize: CGFloat = 44
+    static let liveActivityCountdownMinimumScale: CGFloat = 0.5
 }

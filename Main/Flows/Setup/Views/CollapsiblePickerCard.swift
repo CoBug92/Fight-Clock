@@ -5,19 +5,25 @@ struct CollapsiblePickerCard<Content: View>: View {
 
     let title: String
     let summary: String
+    let accessibleSummary: String
     @Binding var isExpanded: Bool
     let content: Content
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorSchemeContrast) private var contrast
 
     // MARK: - Init
 
     init(
         title: String,
         summary: String,
+        accessibleSummary: String? = nil,
         isExpanded: Binding<Bool>,
         @ViewBuilder content: () -> Content
     ) {
         self.title = title
         self.summary = summary
+        self.accessibleSummary = accessibleSummary ?? summary
         _isExpanded = isExpanded
         self.content = content()
     }
@@ -30,28 +36,53 @@ struct CollapsiblePickerCard<Content: View>: View {
             spacing: Margin.x4
         ) {
             Button {
-                withAnimation(.bouncy(duration: .collapsiblePickerAnimationDuration)) {
+                withAnimation(reduceMotion ? nil : .bouncy(duration: .collapsiblePickerAnimationDuration)) {
                     isExpanded.toggle()
                 }
             } label: {
+                let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(
+                    alignment: .leading,
+                    spacing: Margin.x2
+                )) : AnyLayout(HStackLayout(spacing: Margin.x4))
+
                 HStack(spacing: Margin.x4) {
-                    Text(title)
-                        .font(.title3.bold())
-                    Spacer(minLength: Margin.x4)
-                    if !isExpanded {
-                        Text(summary)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.trailing)
+                    layout {
+                        Text(title)
+                            .font(.title3.bold())
+                            .layoutPriority(1)
+                        if !dynamicTypeSize.isAccessibilitySize {
+                            Spacer(minLength: Margin.x4)
+                        }
+                        if !isExpanded {
+                            Text(summary)
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(Color(.Text.secondaryForeground))
+                                .multilineTextAlignment(dynamicTypeSize.isAccessibilitySize ? .leading : .trailing)
+                        }
+                    }
+                    .fixedSize(
+                        horizontal: false,
+                        vertical: true
+                    )
+                    if dynamicTypeSize.isAccessibilitySize {
+                        Spacer(minLength: .zero)
                     }
                     Image(systemName: isExpanded ? SFSymbol.chevronUp : SFSymbol.chevronDown)
                         .font(.caption.bold())
-                        .foregroundStyle(.secondary)
+                        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                        .foregroundStyle(Color(.Text.secondaryForeground))
+                        .accessibilityHidden(true)
                 }
+                .frame(minHeight: .collapsiblePickerMinimumTouchHeight)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityValue(summary)
+            .accessibilityLabel(title)
+            .accessibilityValue(Localizations.Accessibility.disclosureValue(
+                accessibleSummary,
+                isExpanded ? Localizations.Accessibility.expanded : Localizations.Accessibility.collapsed
+            ))
+            .accessibilityAddTraits(.isHeader)
 
             if isExpanded {
                 content
@@ -63,6 +94,13 @@ struct CollapsiblePickerCard<Content: View>: View {
             Color(.Surface.cardBackground),
             in: RoundedRectangle(cornerRadius: .collapsiblePickerCardCornerRadius)
         )
+        .overlay {
+            if contrast == .increased {
+                RoundedRectangle(cornerRadius: .collapsiblePickerCardCornerRadius)
+                    .strokeBorder(.primary)
+                    .allowsHitTesting(false)
+            }
+        }
     }
 }
 
@@ -70,6 +108,7 @@ struct CollapsiblePickerCard<Content: View>: View {
 
 private extension CGFloat {
     static let collapsiblePickerCardCornerRadius: CGFloat = 18
+    static let collapsiblePickerMinimumTouchHeight: CGFloat = 44
 }
 
 private extension Double {

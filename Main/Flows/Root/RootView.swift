@@ -5,6 +5,9 @@ struct RootView: View {
 
     @ObservedObject var viewModel: RootViewModel
     @State private var showsLaunchOverlay = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.scenePhase) private var scenePhase
 
     // MARK: - Layout
 
@@ -13,18 +16,23 @@ struct RootView: View {
             Group {
                 if viewModel.session == nil {
                     NavigationStack {
-                        SetupView(viewModel: viewModel.setupViewModel, soundSettingsViewModel: viewModel.soundSettingsViewModel)
+                        SetupView(
+                            viewModel: viewModel.setupViewModel,
+                            soundSettingsViewModel: viewModel.soundSettingsViewModel,
+                            didCompleteWorkout: viewModel.didCompleteWorkout
+                        )
                     }
-                        .transition(.opacity.combined(with: .scale(.rootSetupTransitionScale)))
+                    .transition(reduceMotion ? .identity : .opacity.combined(with: .scale(scale: .rootSetupTransitionScale)))
                 } else {
                     ActiveTimerView(viewModel: viewModel.activeTimerViewModel)
-                        .transition(.opacity)
+                        .transition(reduceMotion ? .identity : .opacity)
                 }
             }
+            .accessibilityHidden(isShowingLaunchOverlay)
 
-            if showsLaunchOverlay {
+            if isShowingLaunchOverlay {
                 AppLaunchOverlayView()
-                    .transition(.opacity)
+                    .transition(reduceMotion ? .identity : .opacity)
                     .zIndex(.rootOverlayZIndex)
             }
         }
@@ -35,21 +43,30 @@ struct RootView: View {
             } catch {
                 return
             }
-            withAnimation(.easeOut(duration: .rootLaunchOverlayFadeDuration)) {
+            withAnimation(reduceMotion ? nil : .easeOut(duration: .rootLaunchOverlayFadeDuration)) {
                 showsLaunchOverlay = false
             }
         }
         .animation(
-            .easeOut(duration: .rootSessionTransitionDuration),
+            reduceMotion ? nil : .easeOut(duration: .rootSessionTransitionDuration),
             value: viewModel.session == nil
         )
+        .onChange(of: viewModel.didCompleteWorkout) { _, didCompleteWorkout in
+            guard didCompleteWorkout, voiceOverEnabled, scenePhase == .active else { return }
+            AccessibilityNotification.Announcement(Localizations.Notification.complete).post()
+        }
     }
+
+    private var isShowingLaunchOverlay: Bool { showsLaunchOverlay && !voiceOverEnabled }
 }
 
 // MARK: - Constants
 
-private extension Double {
+private extension CGFloat {
     static let rootSetupTransitionScale = 0.98
+}
+
+private extension Double {
     static let rootOverlayZIndex: Double = 1
     static let rootLaunchOverlayFadeDuration = 0.45
     static let rootSessionTransitionDuration = 0.25

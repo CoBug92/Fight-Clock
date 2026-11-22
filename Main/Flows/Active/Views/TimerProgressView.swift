@@ -3,21 +3,24 @@ import SwiftUI
 struct TimerProgressView: View {
     // MARK: - Properties
 
-    let formattedTime: String
+    let remainingSeconds: Int
     let progress: CGFloat
     let diameter: CGFloat
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorSchemeContrast) private var contrast
 
     // MARK: - Layout
 
     var body: some View {
         ZStack {
             Circle()
-                .stroke(
-                    .primary.opacity(.timerTrackOpacity),
+                .strokeBorder(
+                    .primary.opacity(contrast == .increased ? .timerHighContrastTrackOpacity : .timerTrackOpacity),
                     lineWidth: .timerRingWidth
                 )
 
             Circle()
+                .inset(by: .timerRingWidth / 2)
                 .trim(
                     from: .zero,
                     to: progress
@@ -31,7 +34,7 @@ struct TimerProgressView: View {
                 )
                 .rotationEffect(.degrees(.timerProgressRingRotationAngle))
                 .animation(
-                    .linear(duration: .progressAnimationDuration),
+                    reduceMotion ? nil : .linear(duration: .progressAnimationDuration),
                     value: progress
                 )
 
@@ -50,7 +53,7 @@ struct TimerProgressView: View {
                     .horizontal,
                     Margin.x10
                 )
-                .contentTransition(.numericText(countsDown: true))
+                .contentTransition(reduceMotion ? .identity : .numericText(countsDown: true))
         }
         .frame(
             width: diameter,
@@ -58,7 +61,15 @@ struct TimerProgressView: View {
         )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Localizations.Accessibility.remainingTime)
-        .accessibilityValue(formattedTime)
+        .accessibilityValue(SpokenDuration.format(remainingSeconds))
+    }
+
+    private var formattedTime: String {
+        String(
+            format: TechnicalString.timerFormat,
+            remainingSeconds / .timerSecondsPerMinute,
+            remainingSeconds % .timerSecondsPerMinute
+        )
     }
 }
 
@@ -66,14 +77,19 @@ struct TimerProgressView: View {
 
 private extension CGFloat {
     static let timerFontSize: CGFloat = 180
-    static let timerMinimumScaleFactor: CGFloat = 0.5
+    static let timerMinimumScaleFactor: CGFloat = 0.2
     static let timerRingWidth: CGFloat = 14
 }
 
 private extension Double {
     static let timerTrackOpacity = 0.2
+    static let timerHighContrastTrackOpacity = 0.5
     static let progressAnimationDuration = 0.25
     static let timerProgressRingRotationAngle = -90.0
+}
+
+private extension Int {
+    static let timerSecondsPerMinute = 60
 }
 
 // MARK: - Preview
@@ -81,7 +97,7 @@ private extension Double {
 #if DEBUG && targetEnvironment(simulator)
 #Preview(traits: .sizeThatFitsLayout) {
     TimerProgressView(
-        formattedTime: "2:45",
+        remainingSeconds: 165,
         progress: 0.75,
         diameter: 280
     )

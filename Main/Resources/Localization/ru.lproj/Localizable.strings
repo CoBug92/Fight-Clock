@@ -34,6 +34,7 @@
 "active.preparation" = "ПОДГОТОВКА";
 "active.rest" = "ОТДЫХ";
 "active.paused" = "ПАУЗА";
+"active.round_ending" = "Скоро конец";
 "active.round_progress" = "Интервал %d из %d";
 "permission.title" = "Фоновые сигналы";
 "permission.explanation" = "Разрешите уведомления, чтобы слышать сигналы при заблокированном экране. Беззвучный режим, Фокусирование и звонки могут их заглушить.";
@@ -44,6 +45,14 @@
 "stop.confirm" = "Завершить тренировку";
 "accessibility.start_hint" = "Запускает таймер тренировки";
 "accessibility.remaining_time" = "Оставшееся время";
+"accessibility.collapsed" = "Свернуто";
+"accessibility.disclosure_value" = "%1$@, %2$@";
+"accessibility.duration_component" = "%1$@, %2$@";
+"accessibility.interval_count" = "Количество интервалов";
+"accessibility.expanded" = "Развернуто";
+"accessibility.opens_settings" = "Открывает настройки приложения";
+"accessibility.paired_status" = "%1$@, %2$@";
+"accessibility.round_progress" = "Интервал %1$@. Всего интервалов: %2$@";
 "notification.title" = "Train in Intervals";
 "notification.round" = "Начало работы";
 "notification.rest" = "Отдых";

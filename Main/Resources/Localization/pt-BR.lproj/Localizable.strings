@@ -34,6 +34,7 @@
 "active.preparation" = "PREPARE-SE";
 "active.rest" = "DESCANSO";
 "active.paused" = "EM PAUSA";
+"active.round_ending" = "Quase no fim";
 "active.round_progress" = "Intervalo %d de %d";
 "permission.title" = "Sinais em segundo plano";
 "permission.explanation" = "Permita notificações para ouvir os sinais com a tela bloqueada. O modo silencioso, os modos de Foco e as chamadas podem silenciá-los.";
@@ -44,6 +45,14 @@
 "stop.confirm" = "Encerrar treino";
 "accessibility.start_hint" = "Inicia o cronômetro do treino";
 "accessibility.remaining_time" = "Tempo restante";
+"accessibility.collapsed" = "Recolhido";
+"accessibility.disclosure_value" = "%1$@, %2$@";
+"accessibility.duration_component" = "%1$@, %2$@";
+"accessibility.interval_count" = "Número de intervalos";
+"accessibility.expanded" = "Expandido";
+"accessibility.opens_settings" = "Abre os ajustes do app";
+"accessibility.paired_status" = "%1$@, %2$@";
+"accessibility.round_progress" = "Intervalo %1$@ de %2$@";
 "notification.title" = "Train in Intervals";
 "notification.round" = "Início do exercício";
 "notification.rest" = "Descanso";

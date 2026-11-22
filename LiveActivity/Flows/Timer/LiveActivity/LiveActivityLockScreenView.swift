@@ -5,6 +5,7 @@ struct LiveActivityLockScreenView: View {
 
     let state: BoxingTimerActivityAttributes.ContentState
     let isStale: Bool
+    @ScaledMetric(relativeTo: .largeTitle) private var countdownFontSize = CGFloat.liveActivityExpandedFontSize
 
     // MARK: - Layout
 
@@ -18,6 +19,7 @@ struct LiveActivityLockScreenView: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
+            .accessibilityHidden(true)
 
             VStack(
                 alignment: .leading,
@@ -39,12 +41,14 @@ struct LiveActivityLockScreenView: View {
                 )
                 .font(
                     .system(
-                        size: .liveActivityExpandedFontSize,
+                        size: min(countdownFontSize, .liveActivityMaximumFontSize),
                         weight: .heavy,
                         design: .rounded
                     )
                     .monospacedDigit()
                 )
+                .lineLimit(1)
+                .minimumScaleFactor(.liveActivityMaximumTextMinimumScale)
                 .foregroundStyle(.white)
             }
             .padding(Margin.x9)
@@ -62,4 +66,6 @@ struct LiveActivityLockScreenView: View {
 private extension CGFloat {
     static let liveActivityContentHeight: CGFloat = 112
     static let liveActivityExpandedFontSize: CGFloat = 42
+    static let liveActivityMaximumFontSize: CGFloat = 50
+    static let liveActivityMaximumTextMinimumScale: CGFloat = 0.65
 }

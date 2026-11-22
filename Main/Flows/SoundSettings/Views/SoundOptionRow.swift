@@ -15,19 +15,33 @@ struct SoundOptionRow: View {
                 Text(sound.localizedTitle)
                     .font(.body.weight(.medium))
                     .foregroundStyle(.primary)
+                    .fixedSize(
+                        horizontal: false,
+                        vertical: true
+                    )
                 Spacer()
                 Image(systemName: isSelected ? SFSymbol.checkmarkCircleFill : SFSymbol.circle)
                     .font(.title3)
-                    .foregroundStyle(isSelected ? .orange : .secondary)
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                    .foregroundStyle(isSelected ? Color(.Text.accentForeground) : Color(.Text.secondaryForeground))
+                    .accessibilityHidden(true)
             }
             .padding(
                 .vertical,
                 Margin.x3
             )
+            .frame(minHeight: .soundOptionMinimumTouchHeight)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
+}
+
+// MARK: - Constants
+
+private extension CGFloat {
+    static let soundOptionMinimumTouchHeight: CGFloat = 44
 }
 
 // MARK: - Preview

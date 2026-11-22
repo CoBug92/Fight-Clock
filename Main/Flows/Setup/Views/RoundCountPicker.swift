@@ -5,6 +5,7 @@ struct RoundCountPicker: View {
 
     @Binding var count: Int
     @Binding var isExpanded: Bool
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     // MARK: - Layout
 
@@ -12,23 +13,46 @@ struct RoundCountPicker: View {
         CollapsiblePickerCard(
             title: Localizations.Setup.rounds,
             summary: count.formatted(),
+            accessibleSummary: count.spelledOutForAccessibility,
             isExpanded: $isExpanded
         ) {
+            if dynamicTypeSize.isAccessibilitySize {
+                LargeTextPicker(
+                    title: Localizations.Setup.rounds,
+                    selectionTitle: count.formatted(),
+                    controlTitle: Localizations.Accessibility.intervalCount,
+                    spokenSelectionTitle: count.spelledOutForAccessibility,
+                    showsTitle: false,
+                    selection: $count
+                ) {
+                    options
+                }
+            } else {
+                AccessibleNumberWheel(
+                    title: Localizations.Accessibility.intervalCount,
+                    selection: $count,
+                    values: Array(Int.roundCountPickerMinimum...Int.roundCountPickerMaximum)
+                )
+                .frame(height: .roundCountPickerWheelHeight)
+                .clipped()
+            }
+        }
+        .contextMenu {
             Picker(
-                Localizations.Setup.rounds,
+                Localizations.Accessibility.intervalCount,
                 selection: $count
             ) {
-                ForEach(
-                    Int.roundCountPickerMinimum...Int.roundCountPickerMaximum,
-                    id: \.self
-                ) { value in
-                    Text(value.formatted()).tag(value)
-                }
+                options
             }
-            .pickerStyle(.wheel)
-            .frame(height: .roundCountPickerWheelHeight)
-            .clipped()
-            .accessibilityValue(count.formatted())
+        }
+    }
+
+    private var options: some View {
+        ForEach(
+            Int.roundCountPickerMinimum...Int.roundCountPickerMaximum,
+            id: \.self
+        ) { value in
+            Text(value.formatted()).tag(value)
         }
     }
 }

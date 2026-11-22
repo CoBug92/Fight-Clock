@@ -7,6 +7,7 @@ final class WorkoutSessionController: ObservableObject {
 
     @Published private(set) var session: SessionState?
     @Published private(set) var remainingSeconds: Int = .zero
+    @Published private(set) var didCompleteWorkout = false
 
     // MARK: - Properties
 
@@ -63,6 +64,7 @@ final class WorkoutSessionController: ObservableObject {
         let now = dateProvider.now()
         guard session == nil, let state = engine.start(configuration: configuration, at: now) else { return }
         let generation = beginOperation()
+        didCompleteWorkout = false
         apply(state, at: now)
         analyticsTracker.track(.workoutStarted(state.configuration))
         if isSceneActive, state.phase == .round { signalPlayer.play(.roundStarted, configuration: state.configuration) }
@@ -209,6 +211,7 @@ final class WorkoutSessionController: ObservableObject {
         _ = beginOperation()
         if playSignal, isSceneActive { signalPlayer.play(.workoutCompleted, configuration: state.configuration) }
         stopTicker()
+        didCompleteWorkout = true
         session = nil
         remainingSeconds = .zero
         sessionRepository.clear()

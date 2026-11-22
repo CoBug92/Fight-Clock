@@ -4,20 +4,34 @@ struct TimerPhaseLabel: View {
     // MARK: - Properties
 
     let title: String
+    var subtitle: String?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     // MARK: - Layout
 
     var body: some View {
-        Text(title)
-            .font(
-                .system(
-                    .title,
-                    design: .rounded,
-                    weight: .black
+        VStack(spacing: Margin.x2) {
+            Text(dynamicTypeSize.isAccessibilitySize ? title.capitalized : title)
+                .font(
+                    .system(
+                        .title,
+                        design: .rounded,
+                        weight: .black
+                    )
                 )
-            )
-            .tracking(.timerPhaseLabelTracking)
-            .accessibilityAddTraits(.isHeader)
+                .tracking(dynamicTypeSize.isAccessibilitySize ? .zero : .timerPhaseLabelTracking)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 1 : nil)
+                .minimumScaleFactor(.timerPhaseLabelMinimumScale)
+            if let subtitle {
+                Text(subtitle)
+                    .font(.headline)
+            }
+        }
+        .multilineTextAlignment(.center)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title.capitalized)
+        .accessibilityValue(subtitle ?? TechnicalString.empty)
+        .accessibilityAddTraits(.isHeader)
     }
 }
 
@@ -25,6 +39,7 @@ struct TimerPhaseLabel: View {
 
 private extension CGFloat {
     static let timerPhaseLabelTracking: CGFloat = 2
+    static let timerPhaseLabelMinimumScale: CGFloat = 0.7
 }
 
 // MARK: - Preview
@@ -45,8 +60,6 @@ private extension CGFloat {
     TimerPhaseLabel(title: "ПАУЗА")
         .padding()
 }
-#endif
-
 #Preview(
     "Подготовка",
     traits: .sizeThatFitsLayout
@@ -62,3 +75,4 @@ private extension CGFloat {
     TimerPhaseLabel(title: "ОТДЫХ")
         .padding()
 }
+#endif

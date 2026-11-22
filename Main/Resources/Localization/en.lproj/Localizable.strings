@@ -34,6 +34,7 @@
 "active.preparation" = "GET READY";
 "active.rest" = "REST";
 "active.paused" = "PAUSED";
+"active.round_ending" = "Ending soon";
 "active.round_progress" = "Interval %d of %d";
 "permission.title" = "Background signals";
 "permission.explanation" = "Allow notifications to hear signals while the screen is locked. Silent Mode, Focus, and calls may suppress them.";
@@ -44,6 +45,14 @@
 "stop.confirm" = "End Workout";
 "accessibility.start_hint" = "Starts the workout timer";
 "accessibility.remaining_time" = "Remaining time";
+"accessibility.collapsed" = "Collapsed";
+"accessibility.disclosure_value" = "%1$@, %2$@";
+"accessibility.duration_component" = "%1$@, %2$@";
+"accessibility.interval_count" = "Interval count";
+"accessibility.expanded" = "Expanded";
+"accessibility.opens_settings" = "Opens app settings";
+"accessibility.paired_status" = "%1$@, %2$@";
+"accessibility.round_progress" = "Interval %1$@ of %2$@";
 "notification.title" = "Train in Intervals";
 "notification.round" = "Start of work";
 "notification.rest" = "Rest";

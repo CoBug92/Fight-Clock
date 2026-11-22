@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct SetupHeaderView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @ScaledMetric(relativeTo: .largeTitle) private var titleSize = CGFloat.setupHeaderTitleFontSize
+
     // MARK: - Layout
 
     var body: some View {
@@ -9,20 +12,30 @@ struct SetupHeaderView: View {
             spacing: Margin.x4
         ) {
             Text(Localizations.App.name)
-                .font(
-                    .system(
-                        size: .setupHeaderTitleFontSize,
-                        weight: .black,
-                        design: .rounded
-                    )
-                )
+                .font(titleFont)
+                .accessibilityAddTraits(.isHeader)
             Text(Localizations.Setup.tagline)
                 .font(.headline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color(.Text.secondaryForeground))
         }
         .frame(
             maxWidth: .infinity,
             alignment: .leading
+        )
+    }
+
+    private var titleFont: Font {
+        if dynamicTypeSize.isAccessibilitySize {
+            return .system(
+                .largeTitle,
+                design: .rounded,
+                weight: .black
+            )
+        }
+        return .system(
+            size: titleSize,
+            weight: .black,
+            design: .rounded
         )
     }
 }

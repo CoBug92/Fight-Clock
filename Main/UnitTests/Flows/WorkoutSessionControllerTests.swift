@@ -30,6 +30,7 @@ final class WorkoutSessionControllerTests: XCTestCase {
 
         XCTAssertNil(fixture.sessionController.session)
         XCTAssertNil(fixture.sessionRepository.value)
+        XCTAssertTrue(fixture.sessionController.didCompleteWorkout)
         XCTAssertTrue(fixture.signalPlayer.playRequests.isEmpty)
         XCTAssertEqual(fixture.analyticsTracker.events, [.workoutCompleted(session)])
         let endedSessionIDs = await fixture.liveActivityController.endedSessionIDs
@@ -80,6 +81,13 @@ final class WorkoutSessionControllerTests: XCTestCase {
         let endedSessionIDs = await fixture.liveActivityController.endedSessionIDs
         XCTAssertEqual(endedSessionIDs, [finalRound.id])
         XCTAssertEqual(fixture.signalPlayer.playRequests.map(\.signal), [.roundStarted, .restStarted, .roundStarted, .workoutCompleted])
+        XCTAssertTrue(fixture.sessionController.didCompleteWorkout)
+
+        await fixture.sessionController.start(configuration: configuration)
+        XCTAssertFalse(fixture.sessionController.didCompleteWorkout)
+
+        await fixture.sessionController.stop()
+        XCTAssertFalse(fixture.sessionController.didCompleteWorkout)
     }
     #endif
 

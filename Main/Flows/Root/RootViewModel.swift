@@ -6,6 +6,7 @@ final class RootViewModel: ObservableObject {
     // MARK: - Observable properties
 
     @Published private(set) var session: SessionState?
+    @Published private(set) var didCompleteWorkout: Bool
 
     // MARK: - Properties
 
@@ -14,6 +15,7 @@ final class RootViewModel: ObservableObject {
     let activeTimerViewModel: ActiveTimerViewModel
 
     private let sessionController: WorkoutSessionController
+    private var reportedSceneIsActive: Bool?
 
     // MARK: - Init
 
@@ -28,15 +30,20 @@ final class RootViewModel: ObservableObject {
         self.soundSettingsViewModel = soundSettingsViewModel
         self.activeTimerViewModel = activeTimerViewModel
         session = sessionController.session
+        didCompleteWorkout = sessionController.didCompleteWorkout
         sessionController.$session.assign(to: &$session)
+        sessionController.$didCompleteWorkout.assign(to: &$didCompleteWorkout)
     }
 
     // MARK: - Public methods
 
     func launch(sceneIsActive: Bool) async {
         await setupViewModel.refreshNotificationPermission()
-        await sessionController.launch(sceneIsActive: sceneIsActive)
+        await sessionController.launch(sceneIsActive: reportedSceneIsActive ?? sceneIsActive)
     }
 
-    func setSceneActive(_ isActive: Bool) async { await sessionController.setSceneActive(isActive) }
+    func setSceneActive(_ isActive: Bool) async {
+        reportedSceneIsActive = isActive
+        await sessionController.setSceneActive(isActive)
+    }
 }

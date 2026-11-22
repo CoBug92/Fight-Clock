@@ -34,7 +34,7 @@ struct SoundSettingSection: View {
 
                 Text(footer)
                     .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color(.Text.secondaryForeground))
                     .padding(
                         .top,
                         Margin.x4

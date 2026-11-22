@@ -5,6 +5,7 @@ enum SFSymbol {
     static let chevronRight = "chevron.right"
     static let chevronUp = "chevron.up"
     static let circle = "circle"
+    static let exclamationmarkCircle = "exclamationmark.circle"
     static let compactTimerWarning = "exclamationmark.arrow.trianglehead.2.clockwise.rotate.90"
     static let figureBoxing = "figure.boxing"
     static let figureCooldown = "figure.cooldown"

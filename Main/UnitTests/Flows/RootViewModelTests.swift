@@ -94,6 +94,18 @@ final class RootViewModelTests: XCTestCase {
 
     // MARK: - Session lifecycle
 
+    func testLaunchKeepsSceneActivityReportedBeforeInitialization() async {
+        let fixture = Fixture()
+        fixture.viewModel.update(preparationDuration: .zero)
+
+        await fixture.viewModel.setSceneActive(true)
+        await fixture.viewModel.launch(sceneIsActive: false)
+        await fixture.viewModel.start()
+
+        XCTAssertEqual(fixture.signalPlayer.playRequests.map(\.signal), [.roundStarted])
+        await fixture.viewModel.stop()
+    }
+
     func testWarningPlaysOnceWhenThresholdIsCrossed() async throws {
         let start = Date(timeIntervalSince1970: 1_000)
         let configuration = TimerConfiguration(

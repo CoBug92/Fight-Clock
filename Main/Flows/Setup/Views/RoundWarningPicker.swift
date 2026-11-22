@@ -5,6 +5,7 @@ struct RoundWarningPicker: View {
 
     @Binding var warning: RoundWarning
     @Binding var isExpanded: Bool
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     // MARK: - Layout
 
@@ -12,18 +13,34 @@ struct RoundWarningPicker: View {
         CollapsiblePickerCard(
             title: Localizations.Setup.Warning.title,
             summary: warning.title,
+            accessibleSummary: warning.accessibleTitle,
             isExpanded: $isExpanded
         ) {
-            Picker(
-                Localizations.Setup.Warning.title,
-                selection: $warning
-            ) {
-                Text(Localizations.Setup.Warning.disabled).tag(RoundWarning.disabled)
-                Text(Localizations.Setup.Warning.tenSeconds).tag(RoundWarning.tenSeconds)
-                Text(Localizations.Setup.Warning.thirtySeconds)
-                    .tag(RoundWarning.thirtySeconds)
+            if dynamicTypeSize.isAccessibilitySize {
+                LargeTextPicker(
+                    title: Localizations.Setup.Warning.title,
+                    selectionTitle: warning.accessibleTitle,
+                    showsTitle: false,
+                    selection: $warning
+                ) {
+                    ForEach(RoundWarning.allCases, id: \.self) { option in
+                        Text(option.accessibleTitle).tag(option)
+                    }
+                }
+            } else {
+                Picker(
+                    Localizations.Setup.Warning.title,
+                    selection: $warning
+                ) {
+                    ForEach(RoundWarning.allCases, id: \.self) { option in
+                        Text(option.title)
+                            .accessibilityLabel(option.accessibleTitle)
+                            .accessibilityInputLabels([Text(option.title)])
+                            .tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
             }
-            .pickerStyle(.segmented)
         }
     }
 }
@@ -31,6 +48,10 @@ struct RoundWarningPicker: View {
 // MARK: - Localized title
 
 private extension RoundWarning {
+    var accessibleTitle: String {
+        self == .disabled ? title : SpokenDuration.format(rawValue)
+    }
+
     var title: String {
         switch self {
         case .disabled:

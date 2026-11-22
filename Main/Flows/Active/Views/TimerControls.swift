@@ -12,25 +12,41 @@ struct TimerControls: View {
     var body: some View {
         VStack(spacing: Margin.x8) {
             Button(action: onTogglePause) {
-                Label(
-                    actionTitle,
-                    systemImage: isPaused ? SFSymbol.playFill : SFSymbol.pauseFill
-                )
+                Label {
+                    Text(actionTitle)
+                } icon: {
+                    Image(systemName: isPaused ? SFSymbol.playFill : SFSymbol.pauseFill)
+                        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                        .accessibilityHidden(true)
+                }
                 .font(.headline)
+                .foregroundStyle(Color(.Text.timerActionForeground))
                 .frame(maxWidth: .infinity)
+                .fixedSize(
+                    horizontal: false,
+                    vertical: true
+                )
+                .multilineTextAlignment(.center)
             }
             .buttonStyle(.borderedProminent)
             .tint(Color(.Action.timerActionBackground))
-            .foregroundStyle(Color(.Text.timerActionForeground))
             .controlSize(.large)
 
             Button(
-                Localizations.Action.stop,
                 role: .destructive,
                 action: onStop
-            )
-            .font(.headline)
-            .frame(minHeight: .timerControlsMinimumHeight)
+            ) {
+                Text(Localizations.Action.stop)
+                    .font(.headline)
+                    .foregroundStyle(Color(.Text.timerDestructiveForeground))
+                    .frame(minHeight: .timerControlsMinimumHeight)
+                    .padding(
+                        .horizontal,
+                        Margin.x6
+                    )
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
     }
 

@@ -7,6 +7,7 @@ struct DurationPicker: View {
     @Binding var duration: Int
     let range: ClosedRange<Int>
     @Binding var isExpanded: Bool
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     // MARK: - Computed properties
 
@@ -18,46 +19,102 @@ struct DurationPicker: View {
         CollapsiblePickerCard(
             title: title,
             summary: formattedDuration,
+            accessibleSummary: SpokenDuration.format(duration),
             isExpanded: $isExpanded
         ) {
-            HStack(spacing: .zero) {
-                wheel(
-                    selection: minuteBinding,
-                    values: options.minutes,
-                    label: Localizations.Time.minutes
-                )
-                Text(TechnicalString.colon)
-                    .font(.largeTitle.bold())
-                wheel(
-                    selection: secondBinding,
-                    values: options.seconds(for: duration / .durationPickerSecondsPerMinute),
-                    label: Localizations.Time.seconds
-                )
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: Margin.x4) {
+                    durationComponent(
+                        selection: minuteBinding,
+                        values: options.minutes,
+                        label: Localizations.Time.minutes
+                    )
+                    durationComponent(
+                        selection: secondBinding,
+                        values: options.seconds(for: minuteBinding.wrappedValue),
+                        label: Localizations.Time.seconds
+                    )
+                }
+            } else {
+                HStack(spacing: .zero) {
+                    durationComponent(
+                        selection: minuteBinding,
+                        values: options.minutes,
+                        label: Localizations.Time.minutes
+                    )
+                    Text(TechnicalString.colon)
+                        .font(.largeTitle.bold())
+                        .accessibilityHidden(true)
+                    durationComponent(
+                        selection: secondBinding,
+                        values: options.seconds(for: minuteBinding.wrappedValue),
+                        label: Localizations.Time.seconds
+                    )
+                }
+                .frame(height: .durationPickerWheelHeight)
             }
-            .frame(height: .durationPickerWheelHeight)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(title)
-            .accessibilityValue(formattedDuration)
+        }
+        .contextMenu {
+            durationMenu(
+                title: Localizations.Time.minutes,
+                selection: minuteBinding,
+                values: options.minutes
+            )
+            durationMenu(
+                title: Localizations.Time.seconds,
+                selection: secondBinding,
+                values: options.seconds(for: minuteBinding.wrappedValue)
+            )
         }
     }
 
     // MARK: - Private methods
 
-    private func wheel(selection: Binding<Int>, values: [Int], label: String) -> some View {
-        Picker(
-            label,
-            selection: selection
-        ) {
-            ForEach(
-                values,
-                id: \.self
-            ) { value in
-                Text(value.formatted(.number.precision(.integerLength(.durationPickerMinimumIntegerDigits)))).tag(value)
+    private func durationMenu(title: String, selection: Binding<Int>, values: [Int]) -> some View {
+        Menu(title) {
+            Picker(
+                title,
+                selection: selection
+            ) {
+                durationOptions(values)
             }
+            .pickerStyle(.inline)
         }
-        .pickerStyle(.wheel)
-        .frame(maxWidth: .infinity)
-        .clipped()
+    }
+
+    @ViewBuilder
+    private func durationComponent(selection: Binding<Int>, values: [Int], label: String) -> some View {
+        let accessibilityLabel = Localizations.Accessibility.durationComponent(title, label)
+        if dynamicTypeSize.isAccessibilitySize {
+            LargeTextPicker(
+                title: label,
+                selectionTitle: selection.wrappedValue.formatted(),
+                controlTitle: accessibilityLabel,
+                spokenSelectionTitle: selection.wrappedValue.spelledOutForAccessibility,
+                selection: selection
+            ) {
+                durationOptions(values)
+            }
+        } else {
+            AccessibleNumberWheel(
+                title: accessibilityLabel,
+                selection: selection,
+                values: values,
+                minimumIntegerDigits: .durationPickerMinimumIntegerDigits
+            )
+            .frame(maxWidth: .infinity)
+            .clipped()
+        }
+    }
+
+    private func durationOptions(_ values: [Int]) -> some View {
+        ForEach(
+            values,
+            id: \.self
+        ) { value in
+            Text(value.formatted(.number.precision(.integerLength(.durationPickerMinimumIntegerDigits))))
+                .tag(value)
+        }
     }
 
     // MARK: - Computed properties

@@ -11,6 +11,7 @@ struct StartSessionButton: View {
         Button(action: onStart) {
             Text(Localizations.Action.start)
                 .font(.title3.bold())
+                .foregroundStyle(.black)
                 .frame(maxWidth: .infinity)
                 .padding(
                     .vertical,

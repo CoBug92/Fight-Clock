@@ -5,6 +5,7 @@ struct SoundSettingsLink<Destination: View>: View {
 
     let summary: String
     @ViewBuilder let destination: () -> Destination
+    @Environment(\.colorSchemeContrast) private var contrast
 
     // MARK: - Layout
 
@@ -20,21 +21,33 @@ struct SoundSettingsLink<Destination: View>: View {
                         .foregroundStyle(.primary)
                     Text(summary)
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color(.Text.secondaryForeground))
                         .multilineTextAlignment(.leading)
                 }
                 Spacer(minLength: Margin.x8)
                 Image(systemName: SFSymbol.chevronRight)
                     .font(.caption.bold())
-                    .foregroundStyle(.secondary)
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                    .foregroundStyle(Color(.Text.secondaryForeground))
+                    .accessibilityHidden(true)
             }
             .padding(Margin.x8)
             .background(
                 Color(.Surface.cardBackground),
                 in: RoundedRectangle(cornerRadius: .soundSettingsLinkCornerRadius)
             )
+            .contentShape(RoundedRectangle(cornerRadius: .soundSettingsLinkCornerRadius))
+            .overlay {
+                if contrast == .increased {
+                    RoundedRectangle(cornerRadius: .soundSettingsLinkCornerRadius)
+                        .strokeBorder(.primary)
+                        .allowsHitTesting(false)
+                }
+            }
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(Localizations.Setup.Sound.title)
+        .accessibilityValue(summary)
     }
 }
 
