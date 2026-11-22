@@ -107,12 +107,14 @@ Characters: 32/170
 | User Privacy Choices URL | Оставить пустым: приложение не собирает и не передаёт данные и не предоставляет соответствующих настроек. |
 | Support URL | `https://cobug92.github.io/Fight-Clock/site/support/` |
 | Marketing URL | Не заполнять: отдельная страница не подготовлена. |
-| Product Page Preview | Не добавлять: в репозитории есть только статичные скриншоты, а не видео App Preview. |
+| Product Page Preview | Для 1.0.3 предусмотрены статичные скриншоты. Видео для следующего выпуска описаны в разделе [App Preview](Interval-Timer.md#app-preview). |
 | Pricing | Не менять. |
 | Copyright | Не менять. |
 | App Review Information — Testing Notes | Не менять: нет аккаунтов, входа, демо-доступа или особых шагов для проверки. |
 
 ### Скриншоты
+
+Список ниже относится к набору 1.0.3 в коммите `b262119`. Актуальный набор для интервального таймера описан в [текстах для следующего выпуска](Interval-Timer.md#скриншоты).
 
 - English (U.S.): `docs/AppStore/Preview/en/01.png` … `07.png`.
 - Russian: `docs/AppStore/Preview/ru/01.png` … `07.png`.

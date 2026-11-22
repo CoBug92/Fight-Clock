@@ -33,6 +33,23 @@ struct ActiveTimerView: View {
                 maxHeight: .infinity
             )
             .background(background)
+            #if DEBUG
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    Task { await viewModel.advanceToNextPhase() }
+                } label: {
+                    Label(
+                        Localizations.Action.nextPhase,
+                        systemImage: SFSymbol.forwardEndFill
+                    )
+                    .labelStyle(.iconOnly)
+                }
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.circle)
+                .controlSize(.large)
+                .padding(Margin.x4)
+            }
+            #endif
         }
         .confirmationDialog(
             Localizations.Stop.title,

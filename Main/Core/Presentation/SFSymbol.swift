@@ -13,4 +13,8 @@ enum SFSymbol {
     static let pauseFill = "pause.fill"
     static let playFill = "play.fill"
     static let arrowClockwiseCircleFill = "arrow.clockwise.circle.fill"
+
+    #if DEBUG
+    static let forwardEndFill = "forward.end.fill"
+    #endif
 }

@@ -30,7 +30,11 @@ struct RootView: View {
         }
         .task {
             guard showsLaunchOverlay else { return }
-            try? await Task.sleep(for: .milliseconds(.rootLaunchOverlayDurationMilliseconds))
+            do {
+                try await Task.sleep(for: AppLaunchOverlayView.displayDuration)
+            } catch {
+                return
+            }
             withAnimation(.easeOut(duration: .rootLaunchOverlayFadeDuration)) {
                 showsLaunchOverlay = false
             }
@@ -49,10 +53,6 @@ private extension Double {
     static let rootOverlayZIndex: Double = 1
     static let rootLaunchOverlayFadeDuration = 0.45
     static let rootSessionTransitionDuration = 0.25
-}
-
-private extension Double {
-    static let rootLaunchOverlayDurationMilliseconds = 1_450.0
 }
 
 // MARK: - Preview

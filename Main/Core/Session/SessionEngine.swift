@@ -76,6 +76,16 @@ struct SessionEngine: Sendable {
         return SessionResolution(state: current, signals: signals)
     }
 
+    #if DEBUG
+    func advanceToNextPhase(_ state: SessionState, at date: Date) -> SessionResolution {
+        var ending = resume(state, at: date)
+        ending.phaseEndDate = date
+        let resolution = resolve(ending, at: date)
+        guard state.isPaused, let next = resolution.state else { return resolution }
+        return SessionResolution(state: pause(next, at: date), signals: [])
+    }
+    #endif
+
     func pause(_ state: SessionState, at date: Date) -> SessionState {
         guard !state.isPaused, let phaseEndDate = state.phaseEndDate else { return state }
 

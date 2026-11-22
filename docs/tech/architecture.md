@@ -1,10 +1,10 @@
-# Fight Clock: Technical Architecture
+# Train in Intervals: Technical Architecture
 
 ## Назначение
 
-Документ описывает текущее устройство iOS-приложения Fight Clock для разработчиков и ревьюеров. Источник фактов: Swift-код, XcodeGen/SwiftGen-конфигурация и существующая документация на 22 августа 2026 года.
+Документ описывает текущее устройство iOS-приложения Train in Intervals для разработчиков и ревьюеров. Источник фактов: Swift-код, XcodeGen/SwiftGen-конфигурация и существующая документация на 22 августа 2026 года.
 
-Продуктовое имя в интерфейсе — **Fight Clock**. Техническое имя проекта — `BoxingTimer`; targets и Swift-модули называются `Main` и `LiveActivity`.
+Продуктовое имя в интерфейсе — **Train in Intervals**. Техническое имя проекта — `BoxingTimer`; targets и Swift-модули называются `Main` и `LiveActivity`.
 
 ## Границы
 

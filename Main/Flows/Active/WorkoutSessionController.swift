@@ -114,6 +114,23 @@ final class WorkoutSessionController: ObservableObject {
         }
     }
 
+    #if DEBUG
+    func advanceToNextPhase() async {
+        guard let current = session else { return }
+        let now = dateProvider.now()
+        let resolution = engine.advanceToNextPhase(current, at: now)
+        guard let next = resolution.state else {
+            await complete(playSignal: !current.isPaused, state: current)
+            return
+        }
+        apply(next, at: now)
+        if isSceneActive, let signal = signalToPlay(from: resolution.signals, isRecentBoundary: true) {
+            signalPlayer.play(signal, configuration: next.configuration)
+        }
+        await refreshPhaseEffects(from: current, to: next, at: now)
+    }
+    #endif
+
     func stop() async {
         let stoppedSession = session
         _ = beginOperation()
@@ -163,17 +180,22 @@ final class WorkoutSessionController: ObservableObject {
             signalPlayer.play(signal, configuration: resolved.configuration)
         }
         guard !resolution.signals.isEmpty else { return }
-        notificationScheduler.cancel(for: current)
+        await refreshPhaseEffects(from: current, to: resolved, at: now)
+    }
+
+    private func refreshPhaseEffects(from previous: SessionState, to next: SessionState, at date: Date) async {
+        notificationScheduler.cancel(for: previous)
         let generation = beginOperation()
-        await notificationScheduler.schedule(for: resolved, now: now)
-        guard isCurrent(generation, sessionID: resolved.id) else {
-            notificationScheduler.cancel(for: resolved)
-            return
+        if !next.isPaused {
+            await notificationScheduler.schedule(for: next, now: date)
+            guard isCurrent(generation, sessionID: next.id) else {
+                notificationScheduler.cancel(for: next)
+                return
+            }
         }
-        await liveActivityController.update(for: resolved)
-        guard isCurrent(generation, sessionID: resolved.id) else {
-            await reconcileActivity(sessionID: resolved.id)
-            return
+        await liveActivityController.update(for: next)
+        if !isCurrent(generation, sessionID: next.id) {
+            await reconcileActivity(sessionID: next.id)
         }
     }
 

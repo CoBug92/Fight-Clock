@@ -104,6 +104,25 @@ final class SessionEngineTests: XCTestCase {
         XCTAssertEqual(engine.resume(resumed, at: start.addingTimeInterval(101)), resumed)
     }
 
+    #if DEBUG
+    func testAdvanceFromPausedRoundWithNoRestKeepsNextRoundPaused() throws {
+        let state = try XCTUnwrap(engine.start(configuration: configuration(restDuration: .zero), at: start))
+        let paused = engine.pause(state, at: start.addingTimeInterval(2))
+        let advanceDate = start.addingTimeInterval(100)
+
+        let resolution = engine.advanceToNextPhase(paused, at: advanceDate)
+
+        let next = try XCTUnwrap(resolution.state)
+        XCTAssertEqual(next.phase, .round)
+        XCTAssertEqual(next.currentRound, 2)
+        XCTAssertTrue(next.isPaused)
+        XCTAssertNil(next.phaseEndDate)
+        XCTAssertEqual(next.pausedRemaining, 10)
+        XCTAssertTrue(resolution.signals.isEmpty)
+        XCTAssertEqual(engine.resume(next, at: advanceDate).phaseEndDate, advanceDate.addingTimeInterval(10))
+    }
+    #endif
+
     // MARK: - Round warnings
 
     func testRoundWarningIsEmittedOnceBeforeRoundEnd() throws {

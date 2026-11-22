@@ -25,4 +25,8 @@ final class ActiveTimerViewModel: ObservableObject {
 
     func togglePause() async { await sessionController.togglePause() }
     func stop() async { await sessionController.stop() }
+
+    #if DEBUG
+    func advanceToNextPhase() async { await sessionController.advanceToNextPhase() }
+    #endif
 }

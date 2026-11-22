@@ -48,10 +48,10 @@ tile_draw.rounded_rectangle((0, 0, 119, 119), radius=31, fill="#1d1e21", outline
 icon = Image.open(ICON).convert("RGBA").resize((90, 90), Image.Resampling.LANCZOS)
 icon_tile.alpha_composite(icon, (15, 15))
 canvas.alpha_composite(icon_tile, (64, 202))
-draw.text((64, 350), "Fight Clock", font=font(BOLD, 76), fill="#ffffff", stroke_width=0)
-draw.text((64, 451), "Boxing round timer for iPhone", font=font(REGULAR, 29), fill="#b7b7ba")
+draw.text((64, 350), "Train in Intervals", font=font(BOLD, 76), fill="#ffffff", stroke_width=0)
+draw.text((64, 451), "Interval timer for workouts on iPhone", font=font(REGULAR, 29), fill="#b7b7ba")
 
-# Crop the real active-round screen from the App Store screenshot.
+# Crop the real timer screen from the App Store screenshot.
 source = Image.open(SCREENSHOT).convert("RGBA")
 content = source.crop((150, 520, 1092, 2500))
 screen_size = (290, 610)

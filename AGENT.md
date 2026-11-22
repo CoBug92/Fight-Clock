@@ -1,9 +1,9 @@
-# Инструкции для агентов Fight Clock
+# Инструкции для агентов Train in Intervals
 
 ## Назначение и границы
 
-Fight Clock — офлайн-интервальный таймер для боксерских тренировок на iPhone.
-Пользовательское имя приложения — **Fight Clock**; техническое имя Xcode-проекта —
+Train in Intervals — офлайн-интервальный таймер для тренировок на iPhone.
+Пользовательское имя приложения — **Train in Intervals**; техническое имя Xcode-проекта —
 `BoxingTimer`, а targets и Swift-модули называются по роли: `Main`, `LiveActivity` и
 `MainUnitTests`.
 
@@ -63,8 +63,8 @@ scripts/                    генерация, линт, Fastlane
 - После изменений XcodeGen-спеки, локализаций или ресурсов выполните
   `scripts/generate.sh`. Для него требуется локальный `scripts/.env`; при отсутствии
   создайте его из `scripts/.env.example` и не коммитьте секреты.
-- Сохраняйте product name `Fight Clock` и техническое имя проекта `BoxingTimer` в их
-  соответствующих контекстах; не смешивайте их в идентификаторах, targets и UI.
+- Используйте `Train in Intervals` в пользовательских текстах. Проект Xcode
+  называется `BoxingTimer`, а `PRODUCT_NAME` основного target — `FightClock`.
 
 ## Стиль Swift
 

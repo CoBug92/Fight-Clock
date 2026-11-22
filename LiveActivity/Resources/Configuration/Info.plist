@@ -17,7 +17,9 @@
     <key>CFBundleVersion</key>
     <string>$(CURRENT_PROJECT_VERSION)</string>
     <key>CFBundleDisplayName</key>
-    <string>Fight Clock</string>
+    <string>Train in Intervals</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
     <key>NSExtension</key>
     <dict>
         <key>NSExtensionPointIdentifier</key>

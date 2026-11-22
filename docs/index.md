@@ -1,8 +1,8 @@
-# Документация Fight Clock
+# Документация Train in Intervals
 
-Этот раздел содержит устойчивую документацию по продукту, UX, архитектуре и локальным инструментам Fight Clock.
+Этот раздел содержит устойчивую документацию по продукту, UX, архитектуре и локальным инструментам Train in Intervals.
 
-Продуктовое имя приложения — **Fight Clock**. Техническое имя проекта в репозитории — `BoxingTimer`; targets и Swift-модули называются `Main` и `LiveActivity`.
+Продуктовое имя приложения — **Train in Intervals**. Техническое имя проекта в репозитории — `BoxingTimer`; targets и Swift-модули называются `Main` и `LiveActivity`.
 
 ## Для кого
 
@@ -19,6 +19,7 @@
 | [Product Requirements Document](product/prd.md) | Функциональные и нефункциональные требования к приложению. |
 | [План продуктового пилота](product/pilot-plan-2026-09-07.md) | Протокол трёх реальных тренировок, наблюдения и критерии решения. |
 | [UX Flow](ux/flow.md) | Пользовательские состояния, переходы, ключевые экраны и ограничения UX. |
+| [Тексты для App Store Connect](AppStore/Releases/Interval-Timer.md) | Поля страницы интервального таймера на пяти языках. |
 | [Technical Architecture](tech/architecture.md) | Текущее устройство приложения, слои, поток данных и технические ограничения. |
 | [Firebase Analytics и Crashlytics](tech/firebase-observability.md) | Конфигурация, состав событий, DebugView, Crashlytics и dSYM. |
 | [Локальные скрипты и доставка](tech/scripts.md) | Локальная генерация проекта, SwiftGen/XcodeGen/Fastlane и границы доставки. |
@@ -30,6 +31,9 @@
 ```text
 docs/
 ├── index.md
+├── AppStore/
+│   ├── Preview/
+│   └── Releases/
 ├── assets/
 ├── hypotheses/
 │   ├── apple-watch-remote-control-2026-08-21.md

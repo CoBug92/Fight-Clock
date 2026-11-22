@@ -12,7 +12,7 @@ struct LiveActivityRoundCounterView: View {
             alignment: .trailing,
             spacing: Margin.x1
         ) {
-            Text(Localizations.Activity.round)
+            Text(Localizations.Activity.interval)
                 .font(.caption2.weight(.bold))
                 .foregroundStyle(.white.opacity(.liveActivitySecondaryTextOpacity))
             Text("\(state.currentRound)\(TechnicalString.slash)\(state.totalRounds)")

@@ -36,6 +36,53 @@ final class WorkoutSessionControllerTests: XCTestCase {
         XCTAssertEqual(endedSessionIDs, [session.id])
     }
 
+    #if DEBUG
+    func testAdvanceUsesNormalPhaseEffectsAndCompletesFinalRound() async throws {
+        let fixture = Fixture()
+        let configuration = TimerConfiguration(
+            roundCount: 2,
+            roundDuration: 60,
+            restDuration: 15,
+            preparationDuration: 15,
+            roundWarning: .tenSeconds
+        )
+        await fixture.sessionController.launch(sceneIsActive: true)
+        await fixture.sessionController.start(configuration: configuration)
+        fixture.dateProvider.value = fixture.dateProvider.now().addingTimeInterval(1)
+
+        await fixture.activeTimerViewModel.advanceToNextPhase()
+        let firstRound = try XCTUnwrap(fixture.activeTimerViewModel.session)
+        XCTAssertEqual(firstRound.phase, .round)
+        XCTAssertEqual(firstRound.currentRound, 1)
+        XCTAssertEqual(firstRound.phaseEndDate, fixture.dateProvider.now().addingTimeInterval(60))
+
+        await fixture.activeTimerViewModel.advanceToNextPhase()
+        let rest = try XCTUnwrap(fixture.activeTimerViewModel.session)
+        XCTAssertEqual(rest.phase, .rest)
+        XCTAssertEqual(rest.currentRound, 1)
+        XCTAssertEqual(fixture.activeTimerViewModel.remainingSeconds, 15)
+
+        await fixture.activeTimerViewModel.advanceToNextPhase()
+        let finalRound = try XCTUnwrap(fixture.activeTimerViewModel.session)
+        XCTAssertEqual(finalRound.phase, .round)
+        XCTAssertEqual(finalRound.currentRound, 2)
+        XCTAssertEqual(fixture.activeTimerViewModel.remainingSeconds, 60)
+        XCTAssertEqual(fixture.sessionRepository.value, finalRound)
+        XCTAssertEqual(fixture.notificationScheduler.activeRevisions, [finalRound.notificationRevision])
+        let updatedStates = await fixture.liveActivityController.updatedStates
+        XCTAssertEqual(updatedStates, [firstRound, rest, finalRound])
+
+        await fixture.activeTimerViewModel.advanceToNextPhase()
+        XCTAssertNil(fixture.activeTimerViewModel.session)
+        XCTAssertNil(fixture.sessionRepository.value)
+        XCTAssertTrue(fixture.notificationScheduler.activeRevisions.isEmpty)
+        XCTAssertFalse(fixture.idleTimerController.isDisabled)
+        let endedSessionIDs = await fixture.liveActivityController.endedSessionIDs
+        XCTAssertEqual(endedSessionIDs, [finalRound.id])
+        XCTAssertEqual(fixture.signalPlayer.playRequests.map(\.signal), [.roundStarted, .restStarted, .roundStarted, .workoutCompleted])
+    }
+    #endif
+
     // MARK: - Ticker lifecycle
 
     func testPausedSessionDoesNotWriteUnchangedStateOnTickerInterval() async throws {

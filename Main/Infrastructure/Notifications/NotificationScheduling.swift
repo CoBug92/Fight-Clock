@@ -12,7 +12,7 @@ protocol NotificationScheduling: AnyObject {
     /// Заменяет все будущие уведомления текущей сессии.
     func schedule(for state: SessionState, now: Date) async
 
-    /// Удаляет все будущие уведомления Fight Clock.
+    /// Удаляет все будущие уведомления приложения.
     func cancelAll()
 
     /// Удаляет уведомления только указанной ревизии временной линии.
